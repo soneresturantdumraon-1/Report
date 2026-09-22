@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sone Restaurant - ERP</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#d35400">
+
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- html2canvas for Photo Sharing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <style>
+        :root {
+            --ios-bg: #F2F2F7; --ios-card: #FFFFFF; --ios-text: #1C1C1E; --ios-text-muted: #8E8E93;
+            --ios-orange: #FF9500; --ios-orange-grad: linear-gradient(135deg, #FF9500 0%, #FF5E3A 100%);
+            --ios-green: #34C759; --ios-red: #FF3B30; --ios-blue: #007AFF;
+            --ios-input-bg: rgba(118, 118, 128, 0.12); --ios-separator: rgba(60, 60, 67, 0.1);
+            --radius-card: 16px; --radius-btn: 12px; --radius-input: 10px; --shadow-soft: 0 4px 14px rgba(0,0,0,0.05);
+        }
+
+        body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Poppins", Arial, sans-serif; margin: 0; background-color: var(--ios-bg); display: flex; height: 100vh; overflow: hidden; color: var(--ios-text); -webkit-font-smoothing: antialiased; }
+
+        .sidebar { width: 260px; background-color: #FFFFFF; box-shadow: 2px 0 15px rgba(0,0,0,0.05); display: flex; flex-direction: column; transition: left 0.3s ease; z-index: 1000; }
+        .sidebar-header { padding: 30px 20px 20px 20px; text-align: center; border-bottom: 1px solid var(--ios-separator); }
+        .sidebar-header h2 { margin: 0; font-size: 18px; font-family: 'Montserrat', sans-serif; font-weight: 800; color: var(--ios-text); }
+        .nav-links { list-style: none; padding: 15px 10px; margin: 0; overflow-y: auto; }
+        .nav-links li { margin-bottom: 4px; }
+        .nav-links a { display: flex; align-items: center; padding: 12px 15px; color: var(--ios-text); text-decoration: none; font-weight: 500; font-size: 15px; border-radius: var(--radius-btn); cursor: pointer; }
+        .nav-links a i { margin-right: 15px; width: 20px; text-align: center; font-size: 16px; color: var(--ios-text-muted);}
+        .nav-links a.active { background: var(--ios-orange-grad); color: #fff; box-shadow: 0 4px 10px rgba(255, 149, 0, 0.3); }
+        .nav-links a.active i { color: #fff; }
+
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; position: relative; background-color: var(--ios-bg); }
+        .top-header { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--ios-separator); position: sticky; top: 0; z-index: 100; }
+        .menu-btn { display: none; background: transparent; color: var(--ios-orange); border: none; padding: 5px; cursor: pointer; font-size: 22px; }
+        
+        .date-picker-container { display: flex; align-items: center; gap: 8px; background: var(--ios-input-bg); padding: 6px 12px; border-radius: 20px; }
+        .date-picker-container input { border: none; background: transparent; font-size: 14px; font-weight: 600; color: var(--ios-text); outline: none; width: 110px; font-family: inherit; }
+        .btn-whatsapp-small { background: #25D366; color: #fff; border: none; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3); }
+
+        /* COMMON MODAL STYLE */
+        .share-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; }
+        .share-modal.show { display: flex; }
+        .share-modal-content { background: var(--ios-card); padding: 25px; border-radius: var(--radius-card); width: 100%; max-width: 350px; text-align: center; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.2);}
+        .share-btn { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 14px; margin-bottom: 12px; border: none; border-radius: var(--radius-btn); font-size: 16px; font-weight: 600; cursor: pointer; color: white; }
+        .btn-text { background: var(--ios-green); }
+        .btn-photo { background: var(--ios-orange-grad); }
+        .btn-cancel { background: var(--ios-input-bg); color: var(--ios-text); }
+
+        .tab-panel { display: none; padding: 10px 20px 20px; }
+        .tab-panel.active { display: block; }
+
+        .dashboard-card { background: var(--ios-card); border-radius: var(--radius-card); padding: 18px; margin-bottom: 20px; box-shadow: var(--shadow-soft); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--ios-separator); padding-bottom: 12px; margin-bottom: 15px; }
+        .card-header h3 { margin: 0; font-size: 17px; font-weight: 600; }
+        .total-badge { background: var(--ios-input-bg); padding: 6px 12px; border-radius: 20px; font-size: 14px; font-weight: 600; }
+
+        .simple-report-grid { display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 20px; }
+        .summary-box { background: var(--ios-card); border-radius: var(--radius-card); padding: 16px; box-shadow: var(--shadow-soft); }
+        
+        .modern-input-wrapper { display: flex; gap: 8px; margin-bottom: 10px; }
+        .modern-input-wrapper input { flex: 1; padding: 12px 14px; font-size: 16px; background: var(--ios-input-bg); border: none; border-radius: var(--radius-input); outline: none; }
+        .btn-mini-add { background: var(--ios-green); color: white; border: none; width: 44px; border-radius: var(--radius-input); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+        .report-table { width: 100%; border-collapse: collapse; }
+        .report-table th, .report-table td { padding: 14px 10px; border-bottom: 1px solid var(--ios-separator); font-size: 14px; }
+        .report-table td:last-child { font-weight: 600; text-align: right; }
+        
+        .input-row { display: flex; gap: 10px; margin-bottom: 15px; align-items: flex-end; flex-wrap: wrap; }
+        .input-group { flex: 1; min-width: 120px; }
+        .input-group label { display: block; font-size: 12px; color: var(--ios-text-muted); margin-bottom: 6px; font-weight: 500;}
+        .input-group input { width: 100%; padding: 12px; border: none; background: var(--ios-input-bg); border-radius: var(--radius-input); font-size: 16px; box-sizing: border-box;}
+        .btn-add { background: var(--ios-blue); color: white; border: none; padding: 12px 20px; border-radius: var(--radius-input); cursor: pointer; font-weight: 600; font-size: 14px; height: 43px; }
+
+        .data-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        .data-table th, .data-table td { padding: 12px 10px; text-align: left; border-bottom: 1px solid var(--ios-separator); }
+        .delete-btn { background: var(--ios-red); color: white; border: none; width: 28px; height: 28px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .edit-btn { background: var(--ios-orange); color: white; border: none; width: 28px; height: 28px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+        .water-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; margin-bottom: 20px; }
+        .water-card { background: var(--ios-input-bg); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; align-items: center; gap: 8px;}
+        .water-card input { width: 80%; padding: 8px; border: none; border-radius: 8px; text-align: center; font-weight: 600; font-size: 16px; }
+
+        .btn-excel { background: var(--ios-blue); color: white; border: none; padding: 14px; font-size: 15px; font-weight: 600; border-radius: var(--radius-card); cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;}
+
+        @media (max-width: 900px) {
+            .sidebar { position: fixed; left: -260px; height: 100%; }
+            .sidebar.show { left: 0; }
+            .menu-btn { display: block; }
+        }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); display: none; z-index: 999; }
+        .overlay.show { display: block; }
+
+        /* PRINT PREVIEW STYLES */
+        #print-preview-container {
+            background: #F4F5F7; font-family: 'Poppins', sans-serif;
+            border-radius: 16px; overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1); color: #1C1C1E;
+            width: 100%; max-width: 500px; margin: 0 auto;
+        }
+        .receipt-header-img {
+            background: linear-gradient(135deg, #FF9500 0%, #FF5E3A 100%);
+            padding: 25px 20px; text-align: center; color: white;
+        }
+        .receipt-header-img h2 { margin: 0; font-size: 26px; font-weight: 800; font-family: 'Montserrat', sans-serif; letter-spacing: 0.5px;}
+        .receipt-header-img p { margin: 6px 0 0; font-size: 14px; opacity: 0.9; font-weight: 500; }
+        
+        .receipt-body-img { padding: 20px; }
+        .receipt-card-img {
+            background: #FFFFFF; border-radius: 12px; padding: 15px 18px; margin-bottom: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.05);
+        }
+        .receipt-card-title {
+            font-size: 14px; font-weight: 700; color: #FF9500; text-transform: uppercase;
+            border-bottom: 2px solid #F2F2F7; padding-bottom: 8px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+        }
+        .receipt-tbl-img { width: 100%; border-collapse: collapse; }
+        .receipt-tbl-img td { padding: 8px 0; font-size: 13px; border-bottom: 1px dashed #E5E5EA; color: #3A3A3C; }
+        .receipt-tbl-img tr:last-child td { border-bottom: none; }
+        .receipt-tbl-img td:last-child { text-align: right; font-weight: 600; color: #1C1C1E; }
+        
+        .highlight-net { background: #FFF4E5; border-radius: 8px; }
+        .highlight-net td { color: #d35400 !important; font-weight: 800 !important; font-size: 15px !important; padding: 12px 10px !important; border-bottom: none;}
+        .highlight-cash { background: #E8F8F5; border-radius: 8px; }
+        .highlight-cash td { color: #27ae60 !important; font-weight: 800 !important; font-size: 15px !important; padding: 12px 10px !important; border-bottom: none;}
+        
+        .market-list-item { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid #F2F2F7; font-size: 13px; color:#555;}
+        .market-list-item:last-child { border-bottom: none; }
+        .market-list-item span:last-child { font-weight: 600; color: #1C1C1E; }
+        
+        .receipt-footer-img { text-align: center; font-size: 12px; color: #8E8E93; font-weight: 500; padding: 5px 0 10px 0; }
+        
+        .radio-group { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; background: #fff; padding: 10px; border-radius: 8px; border: 1px solid var(--ios-separator); }
+        .radio-group label { font-size: 14px; font-weight: 600; color: var(--ios-text); display: flex; align-items: center; gap: 8px; cursor: pointer; }
+
+        /* Hidden area for generating the photo smoothly */
+        #hidden-receipt-container {
+            position: fixed; top: -9999px; left: 0; width: 420px; 
+            background: #F4F5F7; font-family: 'Poppins', sans-serif;
+            border-radius: 16px; overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1); color: #1C1C1E; z-index: -100;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+    <!-- MAIN SHARE MODAL -->
+    <div id="shareModal" class="share-modal">
+        <div class="share-modal-content">
+            <h3 style="margin-top:0;">Share Daily Report</h3>
+            <button class="share-btn btn-text" onclick="shareAsText()">
+                <i class="fas fa-comment-alt"></i> Share as Text
+            </button>
+            <button class="share-btn btn-photo" onclick="shareAsImage()">
+                <i class="fas fa-camera"></i> Share as Photo (Bill)
+            </button>
+            <button class="share-btn btn-cancel" onclick="closeShareModal()">Cancel</button>
+        </div>
+    </div>
+
+    <!-- COUNTER CASH DETAILS MODAL -->
+    <div id="ccModal" class="share-modal">
+        <div class="share-modal-content" style="max-width: 400px; padding: 20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid var(--ios-separator); padding-bottom:10px;">
+                <h3 style="margin:0; font-size:16px; color:var(--ios-text);">🧾 Counter Cash Sources</h3>
+                <button onclick="closeCCModal()" style="background:transparent; border:none; font-size:20px; color:var(--ios-red); cursor:pointer;"><i class="fas fa-times-circle"></i></button>
+            </div>
+            <div style="overflow-y:auto; flex:1;">
+                <table class="data-table">
+                    <thead><tr><th>कहाँ से?</th><th>Amount</th><th style="text-align:center;">Action</th></tr></thead>
+                    <tbody id="tbody-counterCash"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- HISTORY VIEW MODAL -->
+    <div id="historyViewModal" class="share-modal">
+        <div class="share-modal-content" style="max-width: 500px; padding: 20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid var(--ios-separator); padding-bottom:10px;">
+                <h3 style="margin:0; font-size:16px; color:var(--ios-text);"><i class="fas fa-history"></i> Past Records History</h3>
+                <button onclick="closeHistoryModal()" style="background:transparent; border:none; font-size:20px; color:var(--ios-red); cursor:pointer;"><i class="fas fa-times-circle"></i></button>
+            </div>
+            <div style="overflow-y:auto; flex:1; max-height: 60vh;">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th style="width:75px;">Date</th>
+                            <th>Sale</th>
+                            <th>Profit</th>
+                            <th>Cash</th>
+                            <th style="text-align:center;">Load</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-historyView"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-utensils" style="font-size: 24px; margin-bottom: 8px; color: var(--ios-orange);"></i>
+            <h2>Sone Restaurant Dumraon</h2>
+        </div>
+        <ul class="nav-links">
+            <li><a class="active" onclick="openTab('tab-report', this)"><i class="fas fa-chart-pie"></i> Payment Report</a></li>
+            <li><a onclick="openTab('tab-water', this)"><i class="fas fa-tint"></i> Water & Thanda</a></li>
+            <li><a onclick="openTab('tab-costomer', this)"><i class="fas fa-users"></i> Costomer (उधार)</a></li>
+            <li><a onclick="openTab('tab-market', this)"><i class="fas fa-shopping-basket"></i> Market (बाज़ार)</a></li>
+            <li><a onclick="openTab('tab-staff', this)"><i class="fas fa-user-tie"></i> Staff Payment</a></li>
+            <li><a onclick="openTab('tab-general', this)"><i class="fas fa-box-open"></i> General Expense</a></li>
+            <li><a onclick="openTab('tab-tip', this)"><i class="fas fa-undo"></i> Tip & Cash Return</a></li>
+            <li><a onclick="openTab('tab-discount', this)"><i class="fas fa-tags"></i> Discount</a></li>
+            <li style="margin-top:15px; border-top:1px solid var(--ios-separator); padding-top:8px;">
+                <a onclick="openTab('tab-trash', this)"><i class="fas fa-trash-restore" style="color: var(--ios-red);"></i> Recycle Bin</a>
+            </li>
+            <li><a onclick="openTab('tab-history', this)"><i class="fas fa-cloud-download-alt"></i> History & Export</a></li>
+            
+            <li style="margin-top:10px;">
+                <a onclick="openTab('tab-print', this); generatePrintView();" style="background: rgba(52, 199, 89, 0.1); color: var(--ios-green); font-weight: 700;">
+                    <i class="fas fa-print" style="color: var(--ios-green);"></i> Print & Share (Bill)
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <div class="top-header">
+            <button class="menu-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="date-picker-container">
+                    <label for="currentDate"><i class="far fa-calendar-alt"></i></label>
+                    <input type="date" id="currentDate" onchange="loadDataForDate()">
+                </div>
+                <button class="btn-whatsapp-small" onclick="openShareModal()" title="Share Report">
+                    <i class="fab fa-whatsapp" style="font-size:20px;"></i>
+                </button>
+            </div>
+        </div>
+
+        <div style="text-align:center; margin: 20px 20px 5px;" id="main-title-area">
+            <h1 style="font-family: 'Montserrat', sans-serif; font-size:24px; font-weight:800; margin:0 0 5px 0;">Sone Restaurant</h1>
+            <p style="font-size:13px; font-weight:500; color:var(--ios-text-muted); margin:0;">
+                <i class="fas fa-map-marker-alt" style="color:var(--ios-orange);"></i> Dumraon Station Road, Dumraon
+            </p>
+        </div>
+
+        <!-- TAB 1: PAYMENT REPORT -->
+        <div id="tab-report" class="tab-panel active">
+            <div class="simple-report-grid">
+                <div class="summary-box">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                        <i class="fas fa-calculator" style="color:var(--ios-red);"></i><h4 style="margin:0; color:var(--ios-red);">Cash Difference</h4>
+                    </div>
+                    <div class="modern-input-wrapper">
+                        <input type="number" id="inp-cashDiff-add" placeholder="Amount...">
+                        <button class="btn-mini-add" style="background:var(--ios-red);" onclick="addToField('cashDiff')"><i class="fas fa-plus"></i></button>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; border-top:1px solid var(--ios-separator); padding-top:10px;">
+                        <span style="font-size:13px; font-weight:600; color:var(--ios-text-muted);">Total</span>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <span style="font-size:18px; font-weight:700; color:var(--ios-red);">₹ <span id="val-cashDiff">0</span></span>
+                            <button class="delete-btn" style="width:24px; height:24px; background:var(--ios-separator); color:var(--ios-text);" onclick="resetField('cashDiff')"><i class="fas fa-undo" style="font-size:10px;">
