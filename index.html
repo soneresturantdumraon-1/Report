@@ -406,6 +406,22 @@
                         </button>
                     </div>
 
+                    <!-- NEW BACKUP & RESTORE SECTION ADDED HERE -->
+                    <div style="background: var(--ios-card); border: 2px solid var(--ios-orange); padding: 15px; border-radius:12px; margin-bottom: 15px;">
+                        <h4 style="color:var(--ios-orange); margin:0 0 5px 0; font-size:15px;"><i class="fas fa-hdd"></i> Local Backup & Restore</h4>
+                        <p style="color: var(--ios-text-muted); font-size: 12px; margin:0 0 10px 0; line-height: 1.4;">Bina internet ke data safe rakhne ke liye file download karein, aur zarurat padne par wapas load (restore) karein.</p>
+                        
+                        <button class="btn-excel" style="background:#FF9500; border-radius:8px; margin-bottom: 10px;" onclick="downloadLocalBackup()">
+                            <i class="fas fa-download"></i> Download Full Backup (.json)
+                        </button>
+                        
+                        <input type="file" id="restoreFileInput" accept=".json" style="display:none;" onchange="handleRestoreFile(event)">
+                        
+                        <button class="btn-excel" style="background:var(--ios-red); border-radius:8px;" onclick="document.getElementById('restoreFileInput').click()">
+                            <i class="fas fa-upload"></i> Restore from Backup
+                        </button>
+                    </div>
+
                     <div style="background: var(--ios-input-bg); padding: 15px; border-radius:12px; margin-bottom: 15px;">
                         <h4 style="color:var(--ios-text); margin:0 0 5px 0; font-size:15px;"><i class="fas fa-history"></i> View Full History</h4>
                         <button class="btn-excel" style="background:#D32F2F; border-radius:8px;" onclick="openHistoryModal()">
@@ -461,7 +477,6 @@
         const SUPABASE_URL = 'https://icvckjgiajrocllkyvcj.supabase.co'; 
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImljdmNramdpYWpyb2NsbGt5dmNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAxMjY3MzUsImV4cCI6MjEwNTcwMjczNX0.a6PBexftJdguGtaP1XrObklLnLAzgfhGZpnHFGs_hGs'; 
         
-        // BUG FIX: Variable ka naam supabaseClient hai taaki clash na ho
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         const loginScreen = document.getElementById('login-screen');
@@ -469,7 +484,6 @@
         const loginError = document.getElementById('login-error');
         const syncStatusBadge = document.getElementById('sync-status-badge');
 
-        // REAL SUPABASE AUTHENTICATION
         async function loginUser() {
             const email = document.getElementById('login-email').value.trim();
             const password = document.getElementById('login-password').value;
@@ -507,7 +521,6 @@
             document.getElementById('currentDate').value = `${yyyy}-${mm}-${dd}`;
             loadDataForDate(); 
 
-            // Auto-login if session exists in Supabase
             const { data } = await supabaseClient.auth.getSession();
             if (data.session) {
                 loginScreen.style.display = 'none';
@@ -588,7 +601,7 @@
         }
 
         // ==========================================
-        // 3. CORE APP LOGIC (Original Code)
+        // 3. CORE APP LOGIC
         // ==========================================
         let appData = {}; let selectedDate = ""; let editState = { type: null, index: -1 };
 
@@ -937,6 +950,67 @@
                 let fileName = range === 'single' ? `Sone_Detailed_${selectedDate}.csv` : "Sone_Detailed_All.csv"; downloadCSVFile(csv, fileName);
             } catch(e) { alert("Download failed: " + e.message); }
         }
+
+        // ==========================================
+        // 4. NEW JSON BACKUP & RESTORE FUNCTIONS
+        // ==========================================
+        function downloadLocalBackup() {
+            try {
+                let localData = localStorage.getItem('sone_erp_ios_v2');
+                if (!localData || localData === '{}') {
+                    alert("Backup ke liye koi data nahi hai!");
+                    return;
+                }
+                
+                let blob = new Blob([localData], { type: 'application/json' });
+                let url = URL.createObjectURL(blob);
+                let a = document.createElement('a');
+                a.href = url;
+                
+                let today = new Date();
+                let yyyy = today.getFullYear();
+                let mm = String(today.getMonth() + 1).padStart(2, '0');
+                let dd = String(today.getDate()).padStart(2, '0');
+                
+                a.download = `Sone_Backup_${yyyy}-${mm}-${dd}.json`;
+                a.click();
+            } catch (e) {
+                alert("Backup fail ho gaya: " + e.message);
+            }
+        }
+
+        function handleRestoreFile(event) {
+            let file = event.target.files[0];
+            if (!file) return;
+
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    let content = e.target.result;
+                    let parsedData = JSON.parse(content);
+                    
+                    if (typeof parsedData !== 'object') throw new Error("File sahi format me nahi hai.");
+
+                    if (confirm("⚠️ DHYAN DEIN: File restore karne se aapka current data update ho jayega. Kya aap aage badhna chahte hain?")) {
+                        // Naye data ko purane data ke sath merge kar rahe hain (Overwrite saftey)
+                        let currentData = JSON.parse(localStorage.getItem('sone_erp_ios_v2')) || {};
+                        let finalData = { ...currentData, ...parsedData };
+                        
+                        localStorage.setItem('sone_erp_ios_v2', JSON.stringify(finalData));
+                        appData = finalData;
+                        loadDataForDate();
+                        syncToSupabase();
+                        
+                        alert("✅ Backup successfully restore ho gaya hai!");
+                    }
+                } catch (error) {
+                    alert("❌ Restore error: File me koi kharabi hai. " + error.message);
+                }
+                event.target.value = ''; // Reset file input so same file can be uploaded again if needed
+            };
+            reader.readAsText(file);
+        }
+
     </script>
 </body>
 </html>
