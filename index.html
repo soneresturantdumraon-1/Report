@@ -174,10 +174,12 @@
     <!-- 1. LOGIN SCREEN -->
     <div id="login-screen" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background: #F4F5F7; z-index:9999; display:flex; align-items:center; justify-content:center; box-sizing:border-box; padding:20px; font-family: 'Poppins', sans-serif; margin: 0;">
         <div style="background: #ffffff; padding: 40px 25px; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.08); border: 1px solid rgba(0,0,0,0.05); width: 100%; max-width: 360px; text-align: center; box-sizing: border-box;">
-            <div style="width: 90px; height: 90px; background: #1C1C1E; border: 4px solid #D32F2F; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto; box-shadow: 0 10px 20px rgba(211, 47, 47, 0.2); position: relative; overflow: hidden;">
-                <div style="position: absolute; width: 100%; height: 50%; background: #D32F2F; transform: rotate(-45deg) translateY(30px); opacity: 0.8;"></div>
-                <span style="color: white; font-size: 55px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-style: italic; position: relative; z-index: 2; line-height: 1;">S</span>
+            
+            <!-- APKA NAYA LOGO -->
+            <div style="width: 150px; height: 150px; margin: 0 auto 20px auto; display: flex; align-items: center; justify-content: center;">
+                <img src="Sonelogo.png" alt="Sone Logo" style="width: 100%; height: 100%; object-fit: contain;">
             </div>
+
             <h2 style="margin:0 0 5px 0; color: #1C1C1E; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 24px; text-transform: uppercase; letter-spacing: 1px;">Sone</h2>
             <p style="color: #D32F2F; margin: 0 0 30px 0; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;">Restaurant</p>
             <div style="position: relative; margin-bottom: 15px;">
@@ -215,14 +217,30 @@
         <div id="ccModal" class="share-modal">
             <div class="share-modal-content" style="max-width: 400px; padding: 20px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid var(--ios-separator); padding-bottom:10px;">
-                    <h3 style="margin:0; font-size:16px; color:var(--ios-text);">🧾 Counter Cash Sources</h3>
+                    <h3 style="margin:0; font-size:16px; color:var(--ios-text);">🧾 Counter Cash Details</h3>
                     <button onclick="closeCCModal()" style="background:transparent; border:none; font-size:20px; color:var(--ios-red); cursor:pointer;"><i class="fas fa-times-circle"></i></button>
                 </div>
+                
+                <!-- NAYA HISAAB: NET TODAY CASH CALCULATION -->
+                <div style="background: #f4fcf6; padding: 14px; border-radius: 12px; border: 1px solid #c8e6c9; margin-bottom: 15px; text-align: left; font-size: 13px;">
+                    <div style="font-weight:700; color:var(--ios-text); margin-bottom: 8px; border-bottom: 1px solid #c8e6c9; padding-bottom: 4px;">Aaj ka Bacha Cash (Net Today):</div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>Total Cash Received:</span> <span id="mdl-tot-cash" style="font-weight:600;">₹0</span></div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:4px; color:#D32F2F;"><span>- Water Payment:</span> <span id="mdl-water" style="font-weight:600;">₹0</span></div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:8px; color:#D32F2F; border-bottom: 1px dashed #ccc; padding-bottom: 8px;"><span>- Market Kharcha:</span> <span id="mdl-market" style="font-weight:600;">₹0</span></div>
+                    <div style="display:flex; justify-content:space-between; font-size:14px; color:var(--ios-green);"><strong>Net Today Cash:</strong> <strong id="mdl-net-today">₹0</strong></div>
+                </div>
+
                 <div style="overflow-y:auto; flex:1;">
+                    <div style="font-size: 13px; font-weight: 700; text-align: left; margin-bottom: 8px; color: var(--ios-text-muted);">Manual Entries (Pahle ka amount): <span id="mdl-old-total" style="color:var(--ios-text); float:right;">₹0</span></div>
                     <table class="data-table">
                         <thead><tr><th>कहाँ से?</th><th>Amount</th><th style="text-align:center;">Action</th></tr></thead>
                         <tbody id="tbody-counterCash"></tbody>
                     </table>
+                </div>
+
+                <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid var(--ios-separator); display:flex; justify-content:space-between; font-size:15px; font-weight:700;">
+                    <span>Total Entry (Pahle + Aaj):</span>
+                    <span id="mdl-total-entry" style="color:var(--ios-blue);">₹0</span>
                 </div>
             </div>
         </div>
@@ -385,6 +403,7 @@
                                 <h4 style="margin:0; font-size:16px; font-weight:700; color: #1C1C1E;">Counter Cash Entry</h4>
                             </div>
                             <div style="display:flex; align-items:center; gap:12px;">
+                                <!-- YAHAN AB PURANA AUR NAYA CASH JUD KAR DIKHEGA (Ghate/Badhega apne aap) -->
                                 <span style="font-size:22px; font-weight:800; color:var(--ios-text);">₹ <span id="val-counterCash">0</span></span>
                                 <button onclick="openCCModal()" style="background:#1C1C1E; color:white; border:none; padding:8px 14px; border-radius:20px; font-size:12px; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:6px; box-shadow:0 4px 10px rgba(0,0,0,0.15);">
                                     <i class="fas fa-eye"></i> Details
@@ -400,11 +419,15 @@
                     </div>
 
                     <div class="report-list" style="margin-bottom:0; border:none; box-shadow:none; border-radius:0;">
-                        <div class="report-row" style="background: transparent;">
-                            <div class="report-label" style="color:var(--ios-red);"><i class="fas fa-minus-circle" style="background: rgba(255,59,48,0.1); color: var(--ios-red);"></i> Total Deductions</div>
+                        <!-- FAALTU ROW YAHAN SE HATA DI GAYI HAI -->
+                        
+                        <!-- FAALTU TEXT HATA DIYA GAYA HAI -->
+                        <div class="report-row" style="background: #fffafa;">
+                            <div class="report-label" style="color:var(--ios-red);"><i class="fas fa-minus-circle" style="background: rgba(255,59,48,0.1); color: var(--ios-red);"></i> - Total Deductions</div>
                             <div class="report-value" id="calc-deductions" style="color: var(--ios-red);"><span class="rupee">₹</span> 0</div>
                         </div>
-                        <div class="report-row" style="background: #f4fcf6;">
+                        
+                        <div class="report-row" style="background: #f4fcf6; border-top: 2px solid var(--ios-separator);">
                             <div class="report-label" style="color:var(--ios-green); font-size:15px; font-weight:700;"><i class="fas fa-box" style="background: rgba(52, 199, 89, 0.15); color: var(--ios-green);"></i> Final Counter Cash</div>
                             <div class="report-value" id="calc-finalcounter" style="color:var(--ios-green); font-size: 20px;"><span class="rupee">₹</span> 0</div>
                         </div>
@@ -892,11 +915,20 @@
             let totalOnlineReceived = totalOnline + udhaarJamaOnline;
             let totalCashReceived = customerCashTotal + udhaarJamaCash;
 
+            // NAYI CALCULATION LOGIC
             let totalCashInDrawer = counterCashEntryTotal; 
             let deductionsFromCounter = tStaff + tGeneral + tTip; 
-            let finalCounterCash = totalCashInDrawer - deductionsFromCounter;
             
-            return { totalSale, waterGrandTotal, khana, tMarket, sone, totalOnlineReceived, totalCashReceived, counterCashEntryTotal, finalCounterCash, tCostomerSum, deductionsFromCounter, tNanaji, tTip, tDiscount, totalDues, totalCashInDrawer, tUdhaarJama };
+            // Bacha hua cash = (Aaya hua total cash) - (Water ka kharcha) - (Market ka kharcha)
+            let netTodayCash = totalCashReceived - waterGrandTotal - tMarket;
+            
+            // Total Entry = Purana Cash + Aaj Ka Bacha Hua Net Cash
+            let combinedCounterEntry = totalCashInDrawer + netTodayCash;
+
+            // Final galle ka paisa = Total Entry - Staff/Gen/Tip deduction
+            let finalCounterCash = combinedCounterEntry - deductionsFromCounter;
+            
+            return { totalSale, waterGrandTotal, khana, tMarket, sone, totalOnlineReceived, totalCashReceived, counterCashEntryTotal, finalCounterCash, tCostomerSum, deductionsFromCounter, tNanaji, tTip, tDiscount, totalDues, totalCashInDrawer, tUdhaarJama, netTodayCash, combinedCounterEntry };
         }
 
         function renderAll() {
@@ -905,7 +937,8 @@
             let w = dObj.water; ['20','30','35','40','45','50','60','90','discount'].forEach(q => { let el=document.getElementById(`w-${q}`); if(document.activeElement!==el) el.value=w[q==='discount'?'discount':`q${q}`]||0; });
             let t = calculateDailyTotals(dObj);
 
-            document.getElementById('val-counterCash').innerText = t.totalCashInDrawer;
+            // MAIN BOX ME COMBINED CASH DIKHAYEGA (Pahle + Aaj)
+            document.getElementById('val-counterCash').innerText = t.combinedCounterEntry;
             document.getElementById('val-top-dues').innerText = t.totalDues;
 
             const rTbl = (type, id) => {
@@ -938,6 +971,14 @@
                 });
             } else { tbT.innerHTML=`<tr><td colspan="3" style="text-align:center; color:gray;">Empty</td></tr>`; }
 
+            // MODAL VALUES (Details icon me show karne ke liye)
+            document.getElementById('mdl-tot-cash').innerText = `₹ ${t.totalCashReceived}`;
+            document.getElementById('mdl-water').innerText = `₹ ${t.waterGrandTotal}`;
+            document.getElementById('mdl-market').innerText = `₹ ${t.tMarket}`;
+            document.getElementById('mdl-net-today').innerText = `₹ ${t.netTodayCash}`;
+            document.getElementById('mdl-old-total').innerText = `₹ ${t.totalCashInDrawer}`;
+            document.getElementById('mdl-total-entry').innerText = `₹ ${t.combinedCounterEntry}`;
+
             // Using innerHTML with proper styling span for Rupee icon
             document.getElementById('calc-totalsale').innerHTML = `<span class="rupee">₹</span> ${t.totalSale}`; 
             document.getElementById('calc-waterpay').innerHTML = `<span class="rupee">₹</span> ${t.waterGrandTotal}`;
@@ -946,6 +987,7 @@
             document.getElementById('calc-sone').innerHTML = `<span class="rupee">₹</span> ${t.sone}`; 
             document.getElementById('calc-online').innerHTML = `<span class="rupee">₹</span> ${t.totalOnlineReceived}`;
             document.getElementById('calc-cash-received').innerHTML = `<span class="rupee">₹</span> ${t.totalCashReceived}`; 
+            
             document.getElementById('calc-deductions').innerHTML = `<span class="rupee">₹</span> ${t.deductionsFromCounter}`; 
             document.getElementById('calc-finalcounter').innerHTML = `<span class="rupee">₹</span> ${t.finalCounterCash}`;
         
@@ -958,9 +1000,9 @@
             let date = document.getElementById('currentDate').value; let dObj = appData[date]; let t = calculateDailyTotals(dObj);
             let dParts = date.split('-'); let cleanDate = `${dParts[2]}/${dParts[1]}/${dParts[0]}`; 
             
-            let text = `*👑 Sone Restaurant Daily Report*\n📅 Date: ${cleanDate}\n\n*🧾 Sale Kharcha Vivaran*\n▪️ Total Sale: Rs. ${t.totalSale}\n▪️ Water Payment: Rs. ${t.waterGrandTotal}\n▪️ Khana Sale: Rs. ${t.khana}\n▪️ Total Market Kharcha: Rs. ${t.tMarket}\n*🔥 Sone (Net Profit): Rs. ${t.sone}*\n▪️ Total Online Payment: Rs. ${t.totalOnlineReceived}\n▪️ Total Cash Received: Rs. ${t.totalCashReceived}\n▪️ Total Payment Dues: Rs. ${t.totalDues}\n\n*💵 Counter Cash Vivaran*\n▪️ Counter Cash Entry: Rs. ${t.totalCashInDrawer}\n`;
-            if (dObj.counterCashArr && dObj.counterCashArr.length > 0) { text += `  (Cash Entries:)\n`; dObj.counterCashArr.forEach(c => { text += `   ↳ ${c.item}: Rs. ${c.amt}\n`; }); }
-            text += `▪️ Total Deductions: Rs. ${t.deductionsFromCounter}\n*✅ Final Counter Cash: Rs. ${t.finalCounterCash}*\n\n`;
+            let text = `*👑 Sone Restaurant Daily Report*\n📅 Date: ${cleanDate}\n\n*🧾 Sale Kharcha Vivaran*\n▪️ Total Sale: Rs. ${t.totalSale}\n▪️ Water Payment: Rs. ${t.waterGrandTotal}\n▪️ Khana Sale: Rs. ${t.khana}\n▪️ Total Market Kharcha: Rs. ${t.tMarket}\n*🔥 Sone (Net Profit): Rs. ${t.sone}*\n▪️ Total Online Payment: Rs. ${t.totalOnlineReceived}\n▪️ Total Cash Received: Rs. ${t.totalCashReceived}\n▪️ Total Payment Dues: Rs. ${t.totalDues}\n\n*💵 Counter Cash Vivaran*\n▪️ Total Counter Cash Entry (Pahle + Aaj): Rs. ${t.combinedCounterEntry}\n`;
+            if (dObj.counterCashArr && dObj.counterCashArr.length > 0) { text += `  (Manual Entries:)\n`; dObj.counterCashArr.forEach(c => { text += `   ↳ ${c.item}: Rs. ${c.amt}\n`; }); }
+            text += `▪️ - Total Deductions: Rs. ${t.deductionsFromCounter}\n*✅ Final Counter Cash: Rs. ${t.finalCounterCash}*\n\n`;
             if (dObj.market && dObj.market.length > 0) { text += `*🛒 Market Kharcha Details:*\n`; dObj.market.forEach((m) => { text += `  🔹 ${m.item}: Rs. ${m.amt}\n`; }); }
             if (dObj.udhaarJamaArr && dObj.udhaarJamaArr.length > 0) { text += `\n*🤝 Udhaar Jama Received:*\n`; dObj.udhaarJamaArr.forEach((u) => { text += `  🔹 ${u.name}: Rs. ${u.amt} (${u.mode})\n`; }); }
             window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
@@ -989,7 +1031,7 @@
                 counterCashSourcesHTML += `</div></td></tr>`;
             }
 
-            let htmlStr = `<div class="receipt-header-img"><h2>Sone Restaurant</h2><p>Daily Report • ${cleanDate}</p></div><div class="receipt-body-img"><div class="receipt-card-img"><div class="receipt-card-title">🧾 Sale Kharcha Vivaran</div><table class="receipt-tbl-img"><tr><td>Total Sale</td><td>Rs. ${t.totalSale}</td></tr><tr><td>Water Payment</td><td>Rs. ${t.waterGrandTotal}</td></tr><tr><td>Khana Sale</td><td>Rs. ${t.khana}</td></tr><tr><td>Total Market Kharcha</td><td>Rs. ${t.tMarket}</td></tr><tr class="highlight-net"><td>Sone (Net Profit)</td><td>Rs. ${t.sone}</td></tr><tr><td style="color:#007AFF;">Total Online Payment</td><td style="color:#007AFF;">Rs. ${t.totalOnlineReceived}</td></tr><tr><td style="color:#27ae60;">Total Cash Received</td><td style="color:#27ae60;">Rs. ${t.totalCashReceived}</td></tr><tr><td style="color:#d35400;">Total Payment Dues</td><td style="color:#d35400;">Rs. ${t.totalDues}</td></tr></table></div><div class="receipt-card-img"><div class="receipt-card-title">💵 Counter Cash (Drawer)</div><table class="receipt-tbl-img"><tr><td style="font-weight:700; color:#000;">Counter Cash Entry</td><td style="font-weight:700; color:#000;">Rs. ${t.totalCashInDrawer}</td></tr>${counterCashSourcesHTML}<tr><td style="padding-top:10px;">Total Deductions</td><td style="padding-top:10px; color:#FF3B30;">- Rs. ${t.deductionsFromCounter}</td></tr><tr class="highlight-cash"><td>Final Counter Cash</td><td>Rs. ${t.finalCounterCash}</td></tr></table></div>${udhaarHTML}${marketHTML}<div class="receipt-footer-img">Report generated from Sone ERP System</div></div>`;
+            let htmlStr = `<div class="receipt-header-img"><h2>Sone Restaurant</h2><p>Daily Report • ${cleanDate}</p></div><div class="receipt-body-img"><div class="receipt-card-img"><div class="receipt-card-title">🧾 Sale Kharcha Vivaran</div><table class="receipt-tbl-img"><tr><td>Total Sale</td><td>Rs. ${t.totalSale}</td></tr><tr><td>Water Payment</td><td>Rs. ${t.waterGrandTotal}</td></tr><tr><td>Khana Sale</td><td>Rs. ${t.khana}</td></tr><tr><td>Total Market Kharcha</td><td>Rs. ${t.tMarket}</td></tr><tr class="highlight-net"><td>Sone (Net Profit)</td><td>Rs. ${t.sone}</td></tr><tr><td style="color:#007AFF;">Total Online Payment</td><td style="color:#007AFF;">Rs. ${t.totalOnlineReceived}</td></tr><tr><td style="color:#27ae60;">Total Cash Received</td><td style="color:#27ae60;">Rs. ${t.totalCashReceived}</td></tr><tr><td style="color:#d35400;">Total Payment Dues</td><td style="color:#d35400;">Rs. ${t.totalDues}</td></tr></table></div><div class="receipt-card-img"><div class="receipt-card-title">💵 Counter Cash (Drawer)</div><table class="receipt-tbl-img"><tr><td style="font-weight:700; color:#000;">Total Counter Cash Entry</td><td style="font-weight:700; color:#000;">Rs. ${t.combinedCounterEntry}</td></tr>${counterCashSourcesHTML}<tr><td style="padding-top:10px;">Total Deductions</td><td style="padding-top:10px; color:#FF3B30;">- Rs. ${t.deductionsFromCounter}</td></tr><tr class="highlight-cash"><td>Final Counter Cash</td><td>Rs. ${t.finalCounterCash}</td></tr></table></div>${udhaarHTML}${marketHTML}<div class="receipt-footer-img">Report generated from Sone ERP System</div></div>`;
 
             let container = document.getElementById('hidden-receipt-container'); container.innerHTML = htmlStr; container.style.top = '0px'; container.style.zIndex = '-100';
             try {
@@ -1041,7 +1083,7 @@
                 counterCashSourcesHTML += `</div></td></tr>`;
             }
 
-            let htmlStr = `<div class="receipt-header-img"><h2>Sone Restaurant</h2><p>Full Daily Report • ${cleanDate}</p></div><div class="receipt-body-img"><div class="receipt-card-img"><div class="receipt-card-title">🧾 Sale Kharcha Vivaran</div><table class="receipt-tbl-img"><tr><td>Total Sale</td><td>Rs. ${t.totalSale}</td></tr><tr><td>Water Payment</td><td>Rs. ${t.waterGrandTotal}</td></tr><tr><td>Khana Sale</td><td>Rs. ${t.khana}</td></tr><tr><td>Total Market Kharcha</td><td>Rs. ${t.tMarket}</td></tr><tr class="highlight-net"><td>Sone (Net Profit)</td><td>Rs. ${t.sone}</td></tr><tr><td style="color:#007AFF;">Total Online Payment</td><td style="color:#007AFF;">Rs. ${t.totalOnlineReceived}</td></tr><tr><td style="color:#27ae60;">Total Cash Received</td><td style="color:#27ae60;">Rs. ${t.totalCashReceived}</td></tr><tr><td style="color:#d35400;">Total Payment Dues</td><td style="color:#d35400;">Rs. ${t.totalDues}</td></tr></table></div><div class="receipt-card-img"><div class="receipt-card-title">💵 Counter Cash (Drawer)</div><table class="receipt-tbl-img"><tr><td style="font-weight:700; color:#000;">Counter Cash Entry</td><td style="font-weight:700; color:#000;">Rs. ${t.totalCashInDrawer}</td></tr>${counterCashSourcesHTML}<tr><td style="padding-top:10px;">Total Deductions</td><td style="padding-top:10px; color:#FF3B30;">- Rs. ${t.deductionsFromCounter}</td></tr><tr class="highlight-cash"><td>Final Counter Cash</td><td>Rs. ${t.finalCounterCash}</td></tr></table></div>${custHTML}${udhaarHTML}${marketHTML}${staffHTML}${genHTML}${tipHTML}${discHTML}${nanaHTML}<div class="receipt-footer-img">Report generated from Sone ERP System</div></div>`;
+            let htmlStr = `<div class="receipt-header-img"><h2>Sone Restaurant</h2><p>Full Daily Report • ${cleanDate}</p></div><div class="receipt-body-img"><div class="receipt-card-img"><div class="receipt-card-title">🧾 Sale Kharcha Vivaran</div><table class="receipt-tbl-img"><tr><td>Total Sale</td><td>Rs. ${t.totalSale}</td></tr><tr><td>Water Payment</td><td>Rs. ${t.waterGrandTotal}</td></tr><tr><td>Khana Sale</td><td>Rs. ${t.khana}</td></tr><tr><td>Total Market Kharcha</td><td>Rs. ${t.tMarket}</td></tr><tr class="highlight-net"><td>Sone (Net Profit)</td><td>Rs. ${t.sone}</td></tr><tr><td style="color:#007AFF;">Total Online Payment</td><td style="color:#007AFF;">Rs. ${t.totalOnlineReceived}</td></tr><tr><td style="color:#27ae60;">Total Cash Received</td><td style="color:#27ae60;">Rs. ${t.totalCashReceived}</td></tr><tr><td style="color:#d35400;">Total Payment Dues</td><td style="color:#d35400;">Rs. ${t.totalDues}</td></tr></table></div><div class="receipt-card-img"><div class="receipt-card-title">💵 Counter Cash (Drawer)</div><table class="receipt-tbl-img"><tr><td style="font-weight:700; color:#000;">Total Counter Cash Entry</td><td style="font-weight:700; color:#000;">Rs. ${t.combinedCounterEntry}</td></tr>${counterCashSourcesHTML}<tr><td style="padding-top:10px;">Total Deductions</td><td style="padding-top:10px; color:#FF3B30;">- Rs. ${t.deductionsFromCounter}</td></tr><tr class="highlight-cash"><td>Final Counter Cash</td><td>Rs. ${t.finalCounterCash}</td></tr></table></div>${custHTML}${udhaarHTML}${marketHTML}${staffHTML}${genHTML}${tipHTML}${discHTML}${nanaHTML}<div class="receipt-footer-img">Report generated from Sone ERP System</div></div>`;
             document.getElementById('print-preview-container').innerHTML = htmlStr;
         }
 
