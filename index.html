@@ -8,12 +8,13 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#1C1C1E">
 
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- html2canvas and Supabase -->
+    <!-- html2canvas, Supabase and Chart.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
         :root {
@@ -21,7 +22,7 @@
             --ios-orange: #FF9500; --ios-orange-grad: linear-gradient(135deg, #FF9500 0%, #FF5E3A 100%);
             --ios-green: #34C759; --ios-red: #FF3B30; --ios-blue: #007AFF;
             --ios-input-bg: rgba(118, 118, 128, 0.08); --ios-separator: rgba(60, 60, 67, 0.08);
-            --radius-card: 18px; --radius-btn: 12px; --radius-input: 12px; --shadow-soft: 0 8px 24px rgba(0,0,0,0.04);
+            --radius-card: 20px; --radius-btn: 12px; --radius-input: 12px; --shadow-soft: 0 8px 24px rgba(0,0,0,0.04);
         }
 
         body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Poppins", Arial, sans-serif; margin: 0; background-color: var(--ios-bg); display: flex; height: 100vh; overflow: hidden; color: var(--ios-text); -webkit-font-smoothing: antialiased; }
@@ -180,6 +181,41 @@
             transition: 0.2s;
         }
         .quick-dues-tag:active { transform: scale(0.95); }
+
+        /* ====== PREMIUM PASTEL DASHBOARD STYLES ====== */
+        
+        /* Premium Filter Buttons */
+        .dash-filter-wrapper { text-align: center; margin-bottom: 25px; overflow-x: auto; white-space: nowrap; }
+        .dash-filter-group { background: #E5E5EA; padding: 4px; border-radius: 14px; display: inline-flex; gap: 0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
+        .dash-filter-btn { padding: 10px 22px; border: none; border-radius: 10px; font-weight: 600; font-size: 13px; cursor: pointer; background: transparent; color: #8E8E93; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); outline: none;}
+        .dash-filter-btn.active { background: #FFFFFF; color: #1C1C1E; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        
+        /* Soft Pastel Cards */
+        .dash-cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 18px; margin-bottom: 25px; }
+        .dash-card { 
+            border-radius: 20px; padding: 22px; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.03); 
+            transition: transform 0.3s ease, box-shadow 0.3s ease; 
+            overflow: hidden; position: relative; color: #1C1C1E; 
+        }
+        .dash-card:hover { transform: translateY(-4px); box-shadow: 0 12px 25px rgba(0,0,0,0.08); }
+        
+        /* Pastel Colors */
+        .card-sale { background: #F4F9FF; border: 1px solid #D6E8FF; }
+        .card-expense { background: #FFF4F4; border: 1px solid #FFD6D6; }
+        .card-profit { background: #F4FFF8; border: 1px solid #D6FFEA; }
+        .card-dues { background: #FFF9F4; border: 1px solid #FFE8D6; cursor: pointer; }
+
+        .dash-card h4 { margin: 0; font-size: 13px; font-weight: 600; color: #8E8E93; text-transform: uppercase; letter-spacing: 0.5px; z-index: 2; position: relative; display: flex; align-items: center; gap: 8px;}
+        .dash-card .val { font-size: 28px; font-weight: 800; margin-top: 10px; z-index: 2; position: relative; font-family: 'Montserrat', sans-serif; color: #1C1C1E;}
+        .dash-card .icon-bg { position: absolute; right: -15px; bottom: -15px; font-size: 90px; opacity: 0.05; z-index: 1; transform: rotate(-10deg); color: #1C1C1E;}
+        
+        .card-dues:hover { border-color: var(--ios-orange); }
+
+        /* Chart Containers */
+        .chart-container { background: #FFFFFF; padding: 20px; border-radius: 20px; box-shadow: var(--shadow-soft); margin-bottom: 25px; position: relative; height: 280px; border: 1px solid #E5E5EA;}
+        .chart-title { font-size: 15px; font-weight: 700; margin-bottom: 15px; color: var(--ios-text); border-bottom: 1px solid #F2F2F7; padding-bottom: 10px; display: flex; align-items: center; gap: 8px;}
+        .chart-title i { color: var(--ios-text-muted); }
     </style>
 </head>
 <body>
@@ -281,11 +317,11 @@
             </div>
         </div>
 
-        <!-- DUES MODAL (NEW) -->
+        <!-- DUES MODAL -->
         <div id="duesModal" class="share-modal">
             <div class="share-modal-content" style="max-width: 400px; padding: 20px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid var(--ios-separator); padding-bottom:10px;">
-                    <h3 style="margin:0; font-size:16px; color:var(--ios-text);"><i class="fas fa-book" style="color:var(--ios-orange);"></i> Baki Udhaar List (All)</h3>
+                    <h3 style="margin:0; font-size:16px; color:var(--ios-text);"><i class="fas fa-book" style="color:var(--ios-orange);"></i> Baki Udhaar List</h3>
                     <button onclick="closeDuesModal()" style="background:transparent; border:none; font-size:20px; color:var(--ios-red); cursor:pointer;"><i class="fas fa-times-circle"></i></button>
                 </div>
                 <div style="overflow-y:auto; flex:1; max-height: 60vh;">
@@ -304,14 +340,14 @@
         <!-- SIDEBAR -->
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <!-- LOGO ADDED HERE IN SIDEBAR -->
                 <div style="width: 80px; height: 80px; margin: 0 auto 10px auto; display: flex; align-items: center; justify-content: center;">
                     <img src="Sonelogo1.png" alt="Sone Logo" style="width: 100%; height: 100%; object-fit: contain;">
                 </div>
                 <h2>SONE RESTAURANT DUMRAON</h2>
             </div>
             <ul class="nav-links">
-                <li><a class="active" onclick="openTab('tab-report', this)"><i class="fas fa-chart-pie"></i> Payment Report</a></li>
+                <li><a class="active" onclick="openTab('tab-dashboard', this)"><i class="fas fa-tachometer-alt" style="color:var(--ios-blue);"></i> Dashboard Overview</a></li>
+                <li><a onclick="openTab('tab-report', this)"><i class="fas fa-chart-pie"></i> Payment Report</a></li>
                 <li><a onclick="openTab('tab-water', this)"><i class="fas fa-tint"></i> Water & Thanda</a></li>
                 <li><a onclick="openTab('tab-costomer', this)"><i class="fas fa-users"></i> Costomer (Today)</a></li>
                 <li><a onclick="openTab('tab-udhaar', this)"><i class="fas fa-hand-holding-usd" style="color:var(--ios-green);"></i> Udhaar Jama (Dues)</a></li>
@@ -360,7 +396,6 @@
             </div>
 
             <div style="text-align:center; margin: 20px 20px 5px;" id="main-title-area">
-                <!-- LOGO ADDED HERE IN APP MAIN TITLE AREA -->
                 <div style="width: 100px; height: 100px; margin: 0 auto 10px auto; display: flex; align-items: center; justify-content: center;">
                     <img src="Sonelogo1.png" alt="Sone Logo" style="width: 100%; height: 100%; object-fit: contain;">
                 </div>
@@ -370,8 +405,63 @@
                 </p>
             </div>
 
+            <!-- TAB 0: DASHBOARD (CLEAN PASTEL UPGRADE) -->
+            <div id="tab-dashboard" class="tab-panel active">
+                
+                <div class="dash-filter-wrapper">
+                    <div class="dash-filter-group">
+                        <button class="dash-filter-btn" id="db-btn-today" onclick="renderDashboard('today')">Today</button>
+                        <button class="dash-filter-btn active" id="db-btn-month" onclick="renderDashboard('month')">This Month</button>
+                        <button class="dash-filter-btn" id="db-btn-year" onclick="renderDashboard('year')">This Year</button>
+                        <!-- ALL TIME BUTTON REMOVED AS REQUESTED -->
+                    </div>
+                </div>
+
+                <div class="dash-cards-grid">
+                    <div class="dash-card card-sale">
+                        <i class="fas fa-wallet icon-bg"></i>
+                        <h4><i class="fas fa-wallet" style="color:var(--ios-blue);"></i> Total Sale</h4>
+                        <div class="val" id="db-val-sale">₹0</div>
+                    </div>
+                    <div class="dash-card card-expense">
+                        <i class="fas fa-shopping-basket icon-bg"></i>
+                        <h4><i class="fas fa-shopping-basket" style="color:var(--ios-red);"></i> Total Kharcha</h4>
+                        <div class="val" id="db-val-expense">₹0</div>
+                    </div>
+                    <div class="dash-card card-profit">
+                        <i class="fas fa-chart-line icon-bg"></i>
+                        <h4><i class="fas fa-chart-line" style="color:var(--ios-green);"></i> Net Profit (Sone)</h4>
+                        <div class="val" id="db-val-profit">₹0</div>
+                    </div>
+                    <div class="dash-card card-dues" onclick="openDuesModal()" title="View Dues Detail">
+                        <i class="fas fa-hand-holding-usd icon-bg"></i>
+                        <h4><i class="fas fa-hand-holding-usd" style="color:var(--ios-orange);"></i> Global Dues <i class="fas fa-arrow-circle-right" style="font-size: 11px; margin-left: auto;"></i></h4>
+                        <div class="val" id="db-val-dues">₹0</div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-title"><i class="fas fa-chart-area"></i> Sale vs Profit Trend (₹)</div>
+                    <canvas id="trendChart"></canvas>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">
+                    <div class="chart-container" style="height: 300px;">
+                        <div class="chart-title"><i class="fas fa-chart-pie"></i> Kharcha Breakdown</div>
+                        <div style="position: relative; height: 220px; width: 100%;">
+                            <canvas id="expenseChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-container" style="display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; background: #FFFFFF;">
+                        <i class="fas fa-lightbulb" style="font-size:50px; color:var(--ios-text-muted); margin-bottom:15px; opacity: 0.5;"></i>
+                        <h4 style="margin:0 0 10px 0; font-size:16px; color:var(--ios-text); font-weight:800;">Data Insights</h4>
+                        <p style="font-size:13px; color:var(--ios-text-muted); padding:0 20px; line-height:1.5;">Upar diye gaye charts aapke business ki live health dikhate hain. Date filter badal kar aap alag-alag mahine ya saal ka trend check kar sakte hain.</p>
+                    </div>
+                </div>
+            </div>
+
             <!-- TAB 1: PAYMENT REPORT -->
-            <div id="tab-report" class="tab-panel active">
+            <div id="tab-report" class="tab-panel">
                 
                 <div class="dashboard-card" style="border-left: 4px solid var(--ios-red);">
                     <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -488,7 +578,6 @@
                         <div class="total-badge" id="lbl-total-udhaar" style="color:var(--ios-green);">₹ 0</div>
                     </div>
                     
-                    <!-- NEW QUICK LIST DIV -->
                     <div style="margin-bottom: 15px; padding: 12px; background: #fffaf5; border: 1px dashed var(--ios-orange); border-radius: 8px;">
                         <h4 style="margin: 0 0 10px 0; font-size: 13px; color: var(--ios-orange);"><i class="fas fa-list"></i> Kispar Kitna Baki Hai (Quick List):</h4>
                         <div id="quick-dues-list" style="display:flex; flex-wrap:wrap; gap:8px;">
@@ -768,7 +857,6 @@
             if(document.getElementById('tab-print').classList.contains('active')){ generatePrintView(); }
         }
 
-        // NEW GLOBAL DUES FUNCTION
         function getGlobalDuesList() {
             let duesMap = {};
             for (let date in appData) {
@@ -831,6 +919,10 @@
                 document.getElementById('main-title-area').style.display = 'block';
             }
             resetEditState(); window.scrollTo(0,0);
+            
+            if(tabId === 'tab-dashboard'){
+                renderDashboard(currentDashboardFilter);
+            }
         }
 
         function openShareModal() { document.getElementById('shareModal').classList.add('show'); }
@@ -838,7 +930,6 @@
         function openCCModal() { document.getElementById('ccModal').classList.add('show'); }
         function closeCCModal() { document.getElementById('ccModal').classList.remove('show'); }
 
-        // DUES MODAL LOGIC
         function openDuesModal() {
             let duesData = getGlobalDuesList();
             let tb = document.getElementById('tbody-duesList');
@@ -881,9 +972,8 @@
             }
             document.getElementById('historyViewModal').classList.add('show');
         }
-        
         function closeHistoryModal() { document.getElementById('historyViewModal').classList.remove('show'); }
-        function loadSpecificDate(dateStr) { document.getElementById('currentDate').value = dateStr; loadDataForDate(); closeHistoryModal(); document.querySelectorAll('.nav-links a')[0].click(); }
+        function loadSpecificDate(dateStr) { document.getElementById('currentDate').value = dateStr; loadDataForDate(); closeHistoryModal(); document.querySelectorAll('.nav-links a')[1].click(); }
 
         // --- Data Manipulation Functions ---
         function addEntry(type) {
@@ -1002,7 +1092,7 @@
             });
 
             let w = dObj.water; let waterSubtotal = (w.q20*20)+(w.q30*30)+(w.q35*35)+(w.q40*40)+(w.q45*45)+(w.q50*50)+(w.q60*60)+(w.q90*90);
-            let waterGrandTotal = waterSubtotal - w.discount;
+            let waterGrandTotal = waterSubtotal - (w.discount || 0);
             
             let totalSale = tCostomerSum - tDiscount; 
             let khana = totalSale - waterGrandTotal; 
@@ -1018,9 +1108,192 @@
             let combinedCounterEntry = totalCashInDrawer + netTodayCash;
             let finalCounterCash = combinedCounterEntry - deductionsFromCounter;
             
-            return { totalSale, waterGrandTotal, khana, tMarket, sone, totalOnlineReceived, totalCashReceived, counterCashEntryTotal, finalCounterCash, tCostomerSum, deductionsFromCounter, tNanaji, tTip, tDiscount, totalDues, totalCashInDrawer, tUdhaarJama, netTodayCash, combinedCounterEntry };
+            return { totalSale, waterGrandTotal, khana, tMarket, sone, totalOnlineReceived, totalCashReceived, counterCashEntryTotal, finalCounterCash, tCostomerSum, deductionsFromCounter, tNanaji, tTip, tDiscount, totalDues, totalCashInDrawer, tUdhaarJama, netTodayCash, combinedCounterEntry, tStaff, tGeneral };
         }
 
+        // ==========================================
+        // 4. PREMIUM PASTEL DASHBOARD LOGIC (Chart.js)
+        // ==========================================
+        let trendChartInstance = null;
+        let expenseChartInstance = null;
+        let currentDashboardFilter = 'month';
+
+        function renderDashboard(range) {
+            currentDashboardFilter = range;
+            
+            document.querySelectorAll('.dash-filter-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('db-btn-' + range).classList.add('active');
+
+            let today = new Date(document.getElementById('currentDate').value || new Date());
+            let currentY = today.getFullYear().toString();
+            let currentM = String(today.getMonth() + 1).padStart(2, '0');
+            let currentD = String(today.getDate()).padStart(2, '0');
+
+            let allDates = Object.keys(appData).sort();
+            let filteredDates = [];
+
+            if (range === 'today') {
+                let dStr = `${currentY}-${currentM}-${currentD}`;
+                if(appData[dStr]) filteredDates.push(dStr);
+            } else if (range === 'month') {
+                filteredDates = allDates.filter(d => d.startsWith(`${currentY}-${currentM}`));
+            } else if (range === 'year') {
+                filteredDates = allDates.filter(d => d.startsWith(currentY));
+            }
+
+            let sumSale = 0, sumProfit = 0, sumExpense = 0;
+            let expMarket = 0, expStaff = 0, expGen = 0, expTip = 0;
+            
+            let chartLabels = [];
+            let chartSales = [];
+            let chartProfit = [];
+
+            filteredDates.forEach(d => {
+                let dObj = appData[d];
+                let t = calculateDailyTotals(dObj);
+                
+                let dayExpense = t.tMarket + t.tStaff + t.tGeneral + t.tTip;
+
+                sumSale += t.totalSale;
+                sumProfit += t.sone;
+                sumExpense += dayExpense;
+
+                expMarket += t.tMarket;
+                expStaff += t.tStaff;
+                expGen += t.tGeneral;
+                expTip += t.tTip;
+
+                let dParts = d.split('-');
+                chartLabels.push(`${dParts[2]}/${dParts[1]}`);
+                chartSales.push(t.totalSale);
+                chartProfit.push(t.sone);
+            });
+
+            // Update Summary Cards
+            document.getElementById('db-val-sale').innerText = '₹' + sumSale.toLocaleString('en-IN');
+            document.getElementById('db-val-expense').innerText = '₹' + sumExpense.toLocaleString('en-IN');
+            document.getElementById('db-val-profit').innerText = '₹' + sumProfit.toLocaleString('en-IN');
+            let globalDuesInfo = getGlobalDuesList();
+            document.getElementById('db-val-dues').innerText = '₹' + globalDuesInfo.globalTotalPending.toLocaleString('en-IN');
+
+            // DRAW TREND CHART (Curved Line with Gradient)
+            let ctxTrend = document.getElementById('trendChart').getContext('2d');
+            if(trendChartInstance) { trendChartInstance.destroy(); }
+            
+            let gradientSale = ctxTrend.createLinearGradient(0, 0, 0, 300);
+            gradientSale.addColorStop(0, 'rgba(0, 122, 255, 0.4)');
+            gradientSale.addColorStop(1, 'rgba(0, 122, 255, 0.0)');
+            
+            let gradientProfit = ctxTrend.createLinearGradient(0, 0, 0, 300);
+            gradientProfit.addColorStop(0, 'rgba(52, 199, 89, 0.4)');
+            gradientProfit.addColorStop(1, 'rgba(52, 199, 89, 0.0)');
+
+            trendChartInstance = new Chart(ctxTrend, {
+                type: 'line',
+                data: {
+                    labels: chartLabels.length ? chartLabels : ['No Data'],
+                    datasets: [
+                        {
+                            label: 'Total Sale (₹)',
+                            data: chartSales.length ? chartSales : [0],
+                            borderColor: '#007AFF', 
+                            backgroundColor: gradientSale,
+                            borderWidth: 3, 
+                            fill: true, 
+                            tension: 0.4, 
+                            pointRadius: 3,
+                            pointHoverRadius: 6,
+                            pointBackgroundColor: '#007AFF'
+                        },
+                        {
+                            label: 'Net Profit (₹)',
+                            data: chartProfit.length ? chartProfit : [0],
+                            borderColor: '#34C759', 
+                            backgroundColor: gradientProfit,
+                            borderWidth: 3, 
+                            fill: true, 
+                            tension: 0.4, 
+                            pointRadius: 3,
+                            pointHoverRadius: 6,
+                            pointBackgroundColor: '#34C759'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: { 
+                        legend: { position: 'top', labels: {font: {family: "'Poppins', sans-serif", weight: '500'}} },
+                        tooltip: {
+                            backgroundColor: 'rgba(28, 28, 30, 0.9)',
+                            titleFont: {family: "'Poppins', sans-serif", size: 13},
+                            bodyFont: {family: "'Poppins', sans-serif", size: 13},
+                            padding: 12,
+                            cornerRadius: 8,
+                            displayColors: true
+                        }
+                    },
+                    scales: { 
+                        y: { 
+                            beginAtZero: true, 
+                            grid: { color: 'rgba(0,0,0,0.04)', drawBorder: false, borderDash: [5, 5] },
+                            ticks: { font: {family: "'Poppins', sans-serif"} }
+                        },
+                        x: { 
+                            grid: { display: false, drawBorder: false },
+                            ticks: { font: {family: "'Poppins', sans-serif"} }
+                        }
+                    }
+                }
+            });
+
+            // DRAW EXPENSE CHART (Premium Doughnut)
+            let ctxExpense = document.getElementById('expenseChart').getContext('2d');
+            if(expenseChartInstance) { expenseChartInstance.destroy(); }
+            
+            let expDataArray = [expMarket, expStaff, expGen, expTip];
+            if (sumExpense === 0) { expDataArray = [0.1, 0, 0, 0]; }
+
+            expenseChartInstance = new Chart(ctxExpense, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Market Kharcha', 'Staff Payment', 'General Exp', 'Tip/Return'],
+                    datasets: [{
+                        data: expDataArray,
+                        backgroundColor: ['#FF3B30', '#FF9500', '#5AC8FA', '#AF52DE'],
+                        borderWidth: 3,
+                        borderColor: '#FFFFFF',
+                        hoverOffset: 8
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false, 
+                    cutout: '75%', 
+                    plugins: { 
+                        legend: { 
+                            position: 'bottom', 
+                            labels: { font: {family: "'Poppins', sans-serif", size: 12}, padding: 20, usePointStyle: true } 
+                        },
+                        tooltip: { 
+                            backgroundColor: 'rgba(28, 28, 30, 0.9)',
+                            bodyFont: {family: "'Poppins', sans-serif", size: 14, weight: '600'},
+                            padding: 12,
+                            cornerRadius: 8,
+                            callbacks: { 
+                                label: function(context) { return ' ₹' + (sumExpense === 0 ? 0 : context.raw.toLocaleString('en-IN')); } 
+                            } 
+                        }
+                    }
+                }
+            });
+        }
+
+        // ==========================================
+        // 5. MASTER RENDER
+        // ==========================================
         function renderAll() {
             let dObj = appData[selectedDate];
             document.getElementById('val-cashDiff').innerText = dObj.cashDiff||0; 
@@ -1031,7 +1304,6 @@
             let globalDuesInfo = getGlobalDuesList();
             document.getElementById('val-top-dues').innerText = globalDuesInfo.globalTotalPending;
 
-            // QUICK LIST IN UDHAAR TAB
             let quickListEl = document.getElementById('quick-dues-list');
             if(quickListEl) {
                 quickListEl.innerHTML = '';
@@ -1095,6 +1367,10 @@
             document.getElementById('calc-finalcounter').innerHTML = `<span class="rupee">₹</span> ${t.finalCounterCash}`;
         
             if(document.getElementById('tab-print').classList.contains('active')){ generatePrintView(); }
+
+            if(document.getElementById('tab-dashboard').classList.contains('active')) {
+                renderDashboard(currentDashboardFilter);
+            }
         }
 
         // --- Export & Share Functions ---
