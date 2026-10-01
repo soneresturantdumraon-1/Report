@@ -166,6 +166,20 @@
             align-items: center;
             gap: 5px;
         }
+
+        .quick-dues-tag {
+            background:var(--ios-input-bg); 
+            padding:6px 10px; 
+            border-radius:6px; 
+            font-size:12px; 
+            font-weight:600; 
+            color:var(--ios-text); 
+            cursor:pointer; 
+            display:inline-block; 
+            border: 1px solid var(--ios-separator);
+            transition: 0.2s;
+        }
+        .quick-dues-tag:active { transform: scale(0.95); }
     </style>
 </head>
 <body>
@@ -177,12 +191,12 @@
             <div style="width: 300px; height: 300px; margin: 0 auto 20px auto; display: flex; align-items: center; justify-content: center;">
                 <img src="Sonelogo.png" alt="Sone Logo" style="width: 100%; height: 100%; object-fit: contain;">
             </div>
-<div
-          <p style="font-size:13px; font-weight:500; color:var(--ios-text-muted); margin:0;">
+            <div>
+                <p style="font-size:13px; font-weight:500; color:var(--ios-text-muted); margin:0;">
                     <i class="fas fa-map-marker-alt" style="color:#D32F2F;"></i> Dumraon Station Road, Dumraon
                 </p>
             </div>
-          <div style="position: relative; margin-bottom: 15px;">
+          <div style="position: relative; margin-bottom: 15px; margin-top: 15px;">
           <i class="fas fa-envelope" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #8E8E93; font-size: 15px;"></i>
                 <input type="email" id="login-email" placeholder="Email Address" style="width: 100%; padding: 14px 15px 14px 45px; border: 2px solid #E5E5EA; border-radius: 12px; box-sizing: border-box; font-size: 15px; background: #F4F5F7; outline: none; transition: border-color 0.3s; font-family: 'Poppins', sans-serif; color: #1C1C1E; font-weight: 500;" onfocus="this.style.borderColor='#1C1C1E'; this.style.background='#FFF'" onblur="this.style.borderColor='#E5E5EA'; this.style.background='#F4F5F7'">
         </div>
@@ -267,6 +281,26 @@
             </div>
         </div>
 
+        <!-- DUES MODAL (NEW) -->
+        <div id="duesModal" class="share-modal">
+            <div class="share-modal-content" style="max-width: 400px; padding: 20px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid var(--ios-separator); padding-bottom:10px;">
+                    <h3 style="margin:0; font-size:16px; color:var(--ios-text);"><i class="fas fa-book" style="color:var(--ios-orange);"></i> Baki Udhaar List (All)</h3>
+                    <button onclick="closeDuesModal()" style="background:transparent; border:none; font-size:20px; color:var(--ios-red); cursor:pointer;"><i class="fas fa-times-circle"></i></button>
+                </div>
+                <div style="overflow-y:auto; flex:1; max-height: 60vh;">
+                    <table class="data-table">
+                        <thead><tr><th>Name</th><th style="text-align:right;">Baki (Pending)</th></tr></thead>
+                        <tbody id="tbody-duesList"></tbody>
+                    </table>
+                    <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid var(--ios-separator); display:flex; justify-content:space-between; font-size:15px; font-weight:700;">
+                        <span>Total Baki Udhaar:</span>
+                        <span id="mdl-global-dues" style="color:var(--ios-red);">₹0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- SIDEBAR -->
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
@@ -345,8 +379,8 @@
                             <i class="fas fa-calculator" style="color:var(--ios-red); font-size:20px;"></i>
                             <h4 style="margin:0; color:var(--ios-red); font-size:16px;">Cash Difference</h4>
                         </div>
-                        <div style="text-align:right; background: #fffaf5; padding: 6px 12px; border-radius: 8px; border: 1px dashed var(--ios-orange);">
-                            <span style="font-size: 11px; color: var(--ios-orange); font-weight: 700; text-transform: uppercase;">Total Payment Dues</span><br>
+                        <div style="text-align:right; background: #fffaf5; padding: 6px 12px; border-radius: 8px; border: 1px dashed var(--ios-orange); cursor:pointer;" onclick="openDuesModal()" title="Click to view details">
+                            <span style="font-size: 11px; color: var(--ios-orange); font-weight: 700; text-transform: uppercase;">Total Payment Dues <i class="fas fa-info-circle"></i></span><br>
                             <span style="font-size: 16px; font-weight: 800; color: var(--ios-orange);">₹ <span id="val-top-dues">0</span></span>
                         </div>
                     </div>
@@ -453,7 +487,16 @@
                         <h3><i class="fas fa-hand-holding-usd" style="color:var(--ios-green);"></i> Udhaar Jama Received</h3>
                         <div class="total-badge" id="lbl-total-udhaar" style="color:var(--ios-green);">₹ 0</div>
                     </div>
-                    <p style="font-size:12px; color:var(--ios-text-muted); margin-top:0;">Jab koi pichhle din ka baki paisa dene aaye, to yaha add karein. <br><b style="color:var(--ios-red);">Note:</b> Agar Cash mila hai to usko bahar 'Counter Cash (Entry)' me bhi daalein.</p>
+                    
+                    <!-- NEW QUICK LIST DIV -->
+                    <div style="margin-bottom: 15px; padding: 12px; background: #fffaf5; border: 1px dashed var(--ios-orange); border-radius: 8px;">
+                        <h4 style="margin: 0 0 10px 0; font-size: 13px; color: var(--ios-orange);"><i class="fas fa-list"></i> Kispar Kitna Baki Hai (Quick List):</h4>
+                        <div id="quick-dues-list" style="display:flex; flex-wrap:wrap; gap:8px;">
+                            <!-- List will auto populate here -->
+                        </div>
+                    </div>
+
+                    <p style="font-size:12px; color:var(--ios-text-muted); margin-top:0;">Jab koi pichhle din ka baki paisa dene aaye, to yaha add karein. Upar naam par click karke direct form bhar sakte hain. <br><b style="color:var(--ios-red);">Note:</b> Agar Cash mila hai to usko bahar 'Counter Cash (Entry)' me bhi daalein.</p>
                     <div class="input-row">
                         <div class="input-group"><label>Customer Name</label><input type="text" id="udhaar-name"></div>
                         <div class="input-group"><label>Amount (₹)</label><input type="number" id="udhaar-amt"></div>
@@ -696,7 +739,7 @@
         }
 
         // ==========================================
-        // 3. CORE APP LOGIC
+        // 3. CORE APP LOGIC & GLOBAL DUES
         // ==========================================
         let appData = {}; let selectedDate = ""; let editState = { type: null, index: -1 };
 
@@ -723,6 +766,41 @@
             appData = stored; renderAll();
             
             if(document.getElementById('tab-print').classList.contains('active')){ generatePrintView(); }
+        }
+
+        // NEW GLOBAL DUES FUNCTION
+        function getGlobalDuesList() {
+            let duesMap = {};
+            for (let date in appData) {
+                let dObj = appData[date];
+                if (dObj.costomer) {
+                    dObj.costomer.forEach(c => {
+                        if (c.dues && c.dues > 0) {
+                            let key = c.name.toLowerCase().trim();
+                            if (!duesMap[key]) duesMap[key] = { originalName: c.name, totalDues: 0, totalPaid: 0 };
+                            duesMap[key].totalDues += parseFloat(c.dues);
+                        }
+                    });
+                }
+                if (dObj.udhaarJamaArr) {
+                    dObj.udhaarJamaArr.forEach(u => {
+                        let key = u.name.toLowerCase().trim();
+                        if (!duesMap[key]) duesMap[key] = { originalName: u.name, totalDues: 0, totalPaid: 0 };
+                        duesMap[key].totalPaid += parseFloat(u.amt);
+                    });
+                }
+            }
+            let pendingList = [];
+            let globalTotalPending = 0;
+            for (let key in duesMap) {
+                let person = duesMap[key];
+                let pending = person.totalDues - person.totalPaid;
+                if (pending > 0) { 
+                    pendingList.push({ name: person.originalName, pending: pending });
+                    globalTotalPending += pending;
+                }
+            }
+            return { globalTotalPending, pendingList };
         }
 
         function toggleSidebar() {
@@ -759,6 +837,26 @@
         function closeShareModal() { document.getElementById('shareModal').classList.remove('show'); }
         function openCCModal() { document.getElementById('ccModal').classList.add('show'); }
         function closeCCModal() { document.getElementById('ccModal').classList.remove('show'); }
+
+        // DUES MODAL LOGIC
+        function openDuesModal() {
+            let duesData = getGlobalDuesList();
+            let tb = document.getElementById('tbody-duesList');
+            tb.innerHTML = '';
+            if(duesData.pendingList.length === 0) {
+                tb.innerHTML = '<tr><td colspan="2" style="text-align:center; padding:20px; color:gray; font-weight:600;">Sab clear hai! Koi baki nahi. 🎉</td></tr>';
+            } else {
+                duesData.pendingList.forEach(p => {
+                    tb.innerHTML += `<tr style="border-bottom:1px solid var(--ios-separator);">
+                        <td style="font-weight:600; font-size:13px; padding:10px 5px;">${p.name}</td>
+                        <td style="color:var(--ios-red); font-size:14px; font-weight:700; text-align:right;">₹${p.pending}</td>
+                    </tr>`;
+                });
+            }
+            document.getElementById('mdl-global-dues').innerText = `₹${duesData.globalTotalPending}`;
+            document.getElementById('duesModal').classList.add('show');
+        }
+        function closeDuesModal() { document.getElementById('duesModal').classList.remove('show'); }
 
         function openHistoryModal() {
             let tb = document.getElementById('tbody-historyView');
@@ -929,8 +1027,24 @@
             let w = dObj.water; ['20','30','35','40','45','50','60','90','discount'].forEach(q => { let el=document.getElementById(`w-${q}`); if(document.activeElement!==el) el.value=w[q==='discount'?'discount':`q${q}`]||0; });
             let t = calculateDailyTotals(dObj);
 
+            // GLOBAL DUES RENDER LOGIC
+            let globalDuesInfo = getGlobalDuesList();
+            document.getElementById('val-top-dues').innerText = globalDuesInfo.globalTotalPending;
+
+            // QUICK LIST IN UDHAAR TAB
+            let quickListEl = document.getElementById('quick-dues-list');
+            if(quickListEl) {
+                quickListEl.innerHTML = '';
+                if(globalDuesInfo.pendingList.length === 0) {
+                    quickListEl.innerHTML = '<span style="font-size:12px; color:var(--ios-green); font-weight:600;">Sab clear hai! Kisi ka baki nahi. 🎉</span>';
+                } else {
+                    globalDuesInfo.pendingList.forEach(p => {
+                        quickListEl.innerHTML += `<span class="quick-dues-tag" onclick="document.getElementById('udhaar-name').value='${p.name}'">${p.name}: <span style="color:var(--ios-red);">₹${p.pending}</span></span>`;
+                    });
+                }
+            }
+
             document.getElementById('val-counterCash').innerText = t.combinedCounterEntry;
-            document.getElementById('val-top-dues').innerText = t.totalDues;
 
             const rTbl = (type, id) => {
                 let tb = document.getElementById(id); tb.innerHTML='';
@@ -988,8 +1102,9 @@
             closeShareModal();
             let date = document.getElementById('currentDate').value; let dObj = appData[date]; let t = calculateDailyTotals(dObj);
             let dParts = date.split('-'); let cleanDate = `${dParts[2]}/${dParts[1]}/${dParts[0]}`; 
+            let globalDuesInfo = getGlobalDuesList();
             
-            let text = `*👑 Sone Restaurant Daily Report*\n📅 Date: ${cleanDate}\n\n*🧾 Sale Kharcha Vivaran*\n▪️ Total Sale: Rs. ${t.totalSale}\n▪️ Water Payment: Rs. ${t.waterGrandTotal}\n▪️ Khana Sale: Rs. ${t.khana}\n▪️ Total Market Kharcha: Rs. ${t.tMarket}\n*🔥 Sone (Net Profit): Rs. ${t.sone}*\n▪️ Total Online Payment: Rs. ${t.totalOnlineReceived}\n▪️ Total Cash Received: Rs. ${t.totalCashReceived}\n▪️ Total Payment Dues: Rs. ${t.totalDues}\n\n`;
+            let text = `*👑 Sone Restaurant Daily Report*\n📅 Date: ${cleanDate}\n\n*🧾 Sale Kharcha Vivaran*\n▪️ Total Sale: Rs. ${t.totalSale}\n▪️ Water Payment: Rs. ${t.waterGrandTotal}\n▪️ Khana Sale: Rs. ${t.khana}\n▪️ Total Market Kharcha: Rs. ${t.tMarket}\n*🔥 Sone (Net Profit): Rs. ${t.sone}*\n▪️ Total Online Payment: Rs. ${t.totalOnlineReceived}\n▪️ Total Cash Received: Rs. ${t.totalCashReceived}\n▪️ Total Payment Dues (All): Rs. ${globalDuesInfo.globalTotalPending}\n\n`;
             
             text += `*💵 Counter Cash Vivaran*\n`;
             text += `  (Aaj ka Bacha Cash):\n   ↳ Total Cash Recd: Rs. ${t.totalCashReceived}\n   ↳ - Water: Rs. ${t.waterGrandTotal}\n   ↳ - Market: Rs. ${t.tMarket}\n   ↳ Net Today Cash = Rs. ${t.netTodayCash}\n\n`;
@@ -1006,6 +1121,7 @@
         async function shareAsImage() {
             closeShareModal(); let date = document.getElementById('currentDate').value; let dObj = appData[date]; let t = calculateDailyTotals(dObj);
             let dParts = date.split('-'); let cleanDate = `${dParts[2]}/${dParts[1]}/${dParts[0]}`; 
+            let globalDuesInfo = getGlobalDuesList();
 
             let marketHTML = '';
             if (dObj.market && dObj.market.length > 0) {
@@ -1026,10 +1142,9 @@
                 counterCashSourcesHTML += `</div></td></tr>`;
             }
 
-            // NAYA DETAILS ICON WALA HISAB PHOTO ME JODNE KE LIYE
             let netCashDetailsHTML = `<tr><td colspan="2" style="padding: 5px 0 5px 0;"><div style="background:#f4fcf6; border-radius:8px; padding:8px 12px; margin-top:2px; border:1px solid #c8e6c9;"><div style="font-size:12px; font-weight:700; color:#27ae60; margin-bottom:5px; border-bottom:1px solid #c8e6c9; padding-bottom:4px;">Aaj ka Bacha Cash (Net Today):</div><div style="display:flex; justify-content:space-between; font-size:12px; color:#3A3A3C; margin-bottom:3px;"><span>Total Cash Received:</span><span style="font-weight:600;">Rs. ${t.totalCashReceived}</span></div><div style="display:flex; justify-content:space-between; font-size:12px; color:#D32F2F; margin-bottom:3px;"><span>- Water Payment:</span><span style="font-weight:600;">Rs. ${t.waterGrandTotal}</span></div><div style="display:flex; justify-content:space-between; font-size:12px; color:#D32F2F; margin-bottom:5px; border-bottom:1px dashed #ccc; padding-bottom:5px;"><span>- Market Kharcha:</span><span style="font-weight:600;">Rs. ${t.tMarket}</span></div><div style="display:flex; justify-content:space-between; font-size:13px; color:#27ae60; font-weight:700;"><span>Net Today Cash:</span><span>Rs. ${t.netTodayCash}</span></div></div></td></tr>`;
 
-            let htmlStr = `<div class="receipt-header-img"><h2>Sone Restaurant</h2><p>Daily Report • ${cleanDate}</p></div><div class="receipt-body-img"><div class="receipt-card-img"><div class="receipt-card-title">🧾 Sale Kharcha Vivaran</div><table class="receipt-tbl-img"><tr><td>Total Sale</td><td>Rs. ${t.totalSale}</td></tr><tr><td>Water Payment</td><td>Rs. ${t.waterGrandTotal}</td></tr><tr><td>Khana Sale</td><td>Rs. ${t.khana}</td></tr><tr><td>Total Market Kharcha</td><td>Rs. ${t.tMarket}</td></tr><tr class="highlight-net"><td>Sone (Net Profit)</td><td>Rs. ${t.sone}</td></tr><tr><td style="color:#007AFF;">Total Online Payment</td><td style="color:#007AFF;">Rs. ${t.totalOnlineReceived}</td></tr><tr><td style="color:#27ae60;">Total Cash Received</td><td style="color:#27ae60;">Rs. ${t.totalCashReceived}</td></tr><tr><td style="color:#d35400;">Total Payment Dues</td><td style="color:#d35400;">Rs. ${t.totalDues}</td></tr></table></div><div class="receipt-card-img"><div class="receipt-card-title">💵 Counter Cash (Drawer)</div><table class="receipt-tbl-img">${netCashDetailsHTML}${counterCashSourcesHTML}<tr><td style="font-weight:700; color:#000; padding-top:10px;">Total Entry (Pahle + Aaj)</td><td style="font-weight:700; color:#000; padding-top:10px;">Rs. ${t.combinedCounterEntry}</td></tr><tr><td style="padding-top:10px;">Total Deductions</td><td style="padding-top:10px; color:#FF3B30;">- Rs. ${t.deductionsFromCounter}</td></tr><tr class="highlight-cash"><td>Final Counter Cash</td><td>Rs. ${t.finalCounterCash}</td></tr></table></div>${udhaarHTML}${marketHTML}<div class="receipt-footer-img">Report generated from Sone ERP System</div></div>`;
+            let htmlStr = `<div class="receipt-header-img"><h2>Sone Restaurant</h2><p>Daily Report • ${cleanDate}</p></div><div class="receipt-body-img"><div class="receipt-card-img"><div class="receipt-card-title">🧾 Sale Kharcha Vivaran</div><table class="receipt-tbl-img"><tr><td>Total Sale</td><td>Rs. ${t.totalSale}</td></tr><tr><td>Water Payment</td><td>Rs. ${t.waterGrandTotal}</td></tr><tr><td>Khana Sale</td><td>Rs. ${t.khana}</td></tr><tr><td>Total Market Kharcha</td><td>Rs. ${t.tMarket}</td></tr><tr class="highlight-net"><td>Sone (Net Profit)</td><td>Rs. ${t.sone}</td></tr><tr><td style="color:#007AFF;">Total Online Payment</td><td style="color:#007AFF;">Rs. ${t.totalOnlineReceived}</td></tr><tr><td style="color:#27ae60;">Total Cash Received</td><td style="color:#27ae60;">Rs. ${t.totalCashReceived}</td></tr><tr><td style="color:#d35400;">Total Payment Dues</td><td style="color:#d35400;">Rs. ${globalDuesInfo.globalTotalPending}</td></tr></table></div><div class="receipt-card-img"><div class="receipt-card-title">💵 Counter Cash (Drawer)</div><table class="receipt-tbl-img">${netCashDetailsHTML}${counterCashSourcesHTML}<tr><td style="font-weight:700; color:#000; padding-top:10px;">Total Entry (Pahle + Aaj)</td><td style="font-weight:700; color:#000; padding-top:10px;">Rs. ${t.combinedCounterEntry}</td></tr><tr><td style="padding-top:10px;">Total Deductions</td><td style="padding-top:10px; color:#FF3B30;">- Rs. ${t.deductionsFromCounter}</td></tr><tr class="highlight-cash"><td>Final Counter Cash</td><td>Rs. ${t.finalCounterCash}</td></tr></table></div>${udhaarHTML}${marketHTML}<div class="receipt-footer-img">Report generated from Sone ERP System</div></div>`;
 
             let container = document.getElementById('hidden-receipt-container'); container.innerHTML = htmlStr; container.style.top = '0px'; container.style.zIndex = '-100';
             try {
@@ -1045,6 +1160,7 @@
         function generatePrintView() {
             let date = document.getElementById('currentDate').value; let dObj = appData[date]; let t = calculateDailyTotals(dObj);
             let dParts = date.split('-'); let cleanDate = `${dParts[2]}/${dParts[1]}/${dParts[0]}`; 
+            let globalDuesInfo = getGlobalDuesList();
 
             const makeSection = (title, icon, arr, isDeduction = false, isUdhaar = false) => {
                 if(!arr || arr.length === 0) return '';
@@ -1081,10 +1197,9 @@
                 counterCashSourcesHTML += `</div></td></tr>`;
             }
 
-            // NAYA DETAILS ICON WALA HISAB PRINT VIEW ME JODNE KE LIYE
             let netCashDetailsHTML = `<tr><td colspan="2" style="padding: 5px 0 5px 0;"><div style="background:#f4fcf6; border-radius:8px; padding:8px 12px; margin-top:2px; border:1px solid #c8e6c9;"><div style="font-size:12px; font-weight:700; color:#27ae60; margin-bottom:5px; border-bottom:1px solid #c8e6c9; padding-bottom:4px;">Aaj ka Bacha Cash (Net Today):</div><div style="display:flex; justify-content:space-between; font-size:12px; color:#3A3A3C; margin-bottom:3px;"><span>Total Cash Received:</span><span style="font-weight:600;">Rs. ${t.totalCashReceived}</span></div><div style="display:flex; justify-content:space-between; font-size:12px; color:#D32F2F; margin-bottom:3px;"><span>- Water Payment:</span><span style="font-weight:600;">Rs. ${t.waterGrandTotal}</span></div><div style="display:flex; justify-content:space-between; font-size:12px; color:#D32F2F; margin-bottom:5px; border-bottom:1px dashed #ccc; padding-bottom:5px;"><span>- Market Kharcha:</span><span style="font-weight:600;">Rs. ${t.tMarket}</span></div><div style="display:flex; justify-content:space-between; font-size:13px; color:#27ae60; font-weight:700;"><span>Net Today Cash:</span><span>Rs. ${t.netTodayCash}</span></div></div></td></tr>`;
 
-            let htmlStr = `<div class="receipt-header-img"><h2>Sone Restaurant</h2><p>Full Daily Report • ${cleanDate}</p></div><div class="receipt-body-img"><div class="receipt-card-img"><div class="receipt-card-title">🧾 Sale Kharcha Vivaran</div><table class="receipt-tbl-img"><tr><td>Total Sale</td><td>Rs. ${t.totalSale}</td></tr><tr><td>Water Payment</td><td>Rs. ${t.waterGrandTotal}</td></tr><tr><td>Khana Sale</td><td>Rs. ${t.khana}</td></tr><tr><td>Total Market Kharcha</td><td>Rs. ${t.tMarket}</td></tr><tr class="highlight-net"><td>Sone (Net Profit)</td><td>Rs. ${t.sone}</td></tr><tr><td style="color:#007AFF;">Total Online Payment</td><td style="color:#007AFF;">Rs. ${t.totalOnlineReceived}</td></tr><tr><td style="color:#27ae60;">Total Cash Received</td><td style="color:#27ae60;">Rs. ${t.totalCashReceived}</td></tr><tr><td style="color:#d35400;">Total Payment Dues</td><td style="color:#d35400;">Rs. ${t.totalDues}</td></tr></table></div><div class="receipt-card-img"><div class="receipt-card-title">💵 Counter Cash (Drawer)</div><table class="receipt-tbl-img">${netCashDetailsHTML}${counterCashSourcesHTML}<tr><td style="font-weight:700; color:#000; padding-top:10px;">Total Entry (Pahle + Aaj)</td><td style="font-weight:700; color:#000; padding-top:10px;">Rs. ${t.combinedCounterEntry}</td></tr><tr><td style="padding-top:10px;">Total Deductions</td><td style="padding-top:10px; color:#FF3B30;">- Rs. ${t.deductionsFromCounter}</td></tr><tr class="highlight-cash"><td>Final Counter Cash</td><td>Rs. ${t.finalCounterCash}</td></tr></table></div>${custHTML}${udhaarHTML}${marketHTML}${staffHTML}${genHTML}${tipHTML}${discHTML}${nanaHTML}<div class="receipt-footer-img">Report generated from Sone ERP System</div></div>`;
+            let htmlStr = `<div class="receipt-header-img"><h2>Sone Restaurant</h2><p>Full Daily Report • ${cleanDate}</p></div><div class="receipt-body-img"><div class="receipt-card-img"><div class="receipt-card-title">🧾 Sale Kharcha Vivaran</div><table class="receipt-tbl-img"><tr><td>Total Sale</td><td>Rs. ${t.totalSale}</td></tr><tr><td>Water Payment</td><td>Rs. ${t.waterGrandTotal}</td></tr><tr><td>Khana Sale</td><td>Rs. ${t.khana}</td></tr><tr><td>Total Market Kharcha</td><td>Rs. ${t.tMarket}</td></tr><tr class="highlight-net"><td>Sone (Net Profit)</td><td>Rs. ${t.sone}</td></tr><tr><td style="color:#007AFF;">Total Online Payment</td><td style="color:#007AFF;">Rs. ${t.totalOnlineReceived}</td></tr><tr><td style="color:#27ae60;">Total Cash Received</td><td style="color:#27ae60;">Rs. ${t.totalCashReceived}</td></tr><tr><td style="color:#d35400;">Total Payment Dues</td><td style="color:#d35400;">Rs. ${globalDuesInfo.globalTotalPending}</td></tr></table></div><div class="receipt-card-img"><div class="receipt-card-title">💵 Counter Cash (Drawer)</div><table class="receipt-tbl-img">${netCashDetailsHTML}${counterCashSourcesHTML}<tr><td style="font-weight:700; color:#000; padding-top:10px;">Total Entry (Pahle + Aaj)</td><td style="font-weight:700; color:#000; padding-top:10px;">Rs. ${t.combinedCounterEntry}</td></tr><tr><td style="padding-top:10px;">Total Deductions</td><td style="padding-top:10px; color:#FF3B30;">- Rs. ${t.deductionsFromCounter}</td></tr><tr class="highlight-cash"><td>Final Counter Cash</td><td>Rs. ${t.finalCounterCash}</td></tr></table></div>${custHTML}${udhaarHTML}${marketHTML}${staffHTML}${genHTML}${tipHTML}${discHTML}${nanaHTML}<div class="receipt-footer-img">Report generated from Sone ERP System</div></div>`;
             document.getElementById('print-preview-container').innerHTML = htmlStr;
         }
 
@@ -1110,7 +1225,7 @@
                 if (range === 'single') { if (!appData[selectedDate]) return alert("Is date par koi data nahi hai!"); dates = [selectedDate]; }
                 if(!dates.length) return alert("No Data!");
 
-                let csv = "Date,Total Sale,Water Payment,Khana,Total Market Kharcha,Market Items Detail,Sone Net Profit,Total Online,Total Cash Received,Total Dues,Counter Cash Manual Entry,Deductions (Staff+Gen+Tip),Deductions Detail,Final Counter Cash\n";
+                let csv = "Date,Total Sale,Water Payment,Khana,Total Market Kharcha,Market Items Detail,Sone Net Profit,Total Online,Total Cash Received,Total Dues (Today),Counter Cash Manual Entry,Deductions (Staff+Gen+Tip),Deductions Detail,Final Counter Cash\n";
                 dates.forEach(d => {
                     let dObj = appData[d]; let t = calculateDailyTotals(dObj); let dp = d.split('-'); let c = `${dp[2]}/${dp[1]}/${dp[0]}`; 
                     let marketDetail = wrapCSV((dObj.market||[]).map(m=>`${m.item} (Rs.${m.amt})`).join(' | ')); 
