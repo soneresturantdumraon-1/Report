@@ -1094,7 +1094,9 @@
             let w = dObj.water; let waterSubtotal = (w.q20*20)+(w.q30*30)+(w.q35*35)+(w.q40*40)+(w.q45*45)+(w.q50*50)+(w.q60*60)+(w.q90*90);
             let waterGrandTotal = waterSubtotal - (w.discount || 0);
             
-            let totalSale = tCostomerSum - tDiscount; 
+            // YAHAN PAR BADLAV KIYA GAYA HAI (tTip ko bhi minus kiya gaya hai)
+            let totalSale = tCostomerSum - tDiscount - tTip; 
+            
             let khana = totalSale - waterGrandTotal; 
             let sone = khana - tMarket;
             
