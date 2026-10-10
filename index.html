@@ -183,24 +183,15 @@
         .quick-dues-tag:active { transform: scale(0.95); }
 
         /* ====== PREMIUM PASTEL DASHBOARD STYLES ====== */
-        
-        /* Premium Filter Buttons */
         .dash-filter-wrapper { text-align: center; margin-bottom: 25px; overflow-x: auto; white-space: nowrap; }
         .dash-filter-group { background: #E5E5EA; padding: 4px; border-radius: 14px; display: inline-flex; gap: 0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
         .dash-filter-btn { padding: 10px 22px; border: none; border-radius: 10px; font-weight: 600; font-size: 13px; cursor: pointer; background: transparent; color: #8E8E93; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); outline: none;}
         .dash-filter-btn.active { background: #FFFFFF; color: #1C1C1E; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         
-        /* Soft Pastel Cards */
         .dash-cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 18px; margin-bottom: 25px; }
-        .dash-card { 
-            border-radius: 20px; padding: 22px; 
-            box-shadow: 0 8px 20px rgba(0,0,0,0.03); 
-            transition: transform 0.3s ease, box-shadow 0.3s ease; 
-            overflow: hidden; position: relative; color: #1C1C1E; 
-        }
+        .dash-card { border-radius: 20px; padding: 22px; box-shadow: 0 8px 20px rgba(0,0,0,0.03); transition: transform 0.3s ease, box-shadow 0.3s ease; overflow: hidden; position: relative; color: #1C1C1E; }
         .dash-card:hover { transform: translateY(-4px); box-shadow: 0 12px 25px rgba(0,0,0,0.08); }
         
-        /* Pastel Colors */
         .card-sale { background: #F4F9FF; border: 1px solid #D6E8FF; }
         .card-expense { background: #FFF4F4; border: 1px solid #FFD6D6; }
         .card-profit { background: #F4FFF8; border: 1px solid #D6FFEA; }
@@ -209,13 +200,25 @@
         .dash-card h4 { margin: 0; font-size: 13px; font-weight: 600; color: #8E8E93; text-transform: uppercase; letter-spacing: 0.5px; z-index: 2; position: relative; display: flex; align-items: center; gap: 8px;}
         .dash-card .val { font-size: 28px; font-weight: 800; margin-top: 10px; z-index: 2; position: relative; font-family: 'Montserrat', sans-serif; color: #1C1C1E;}
         .dash-card .icon-bg { position: absolute; right: -15px; bottom: -15px; font-size: 90px; opacity: 0.05; z-index: 1; transform: rotate(-10deg); color: #1C1C1E;}
-        
         .card-dues:hover { border-color: var(--ios-orange); }
 
-        /* Chart Containers */
         .chart-container { background: #FFFFFF; padding: 20px; border-radius: 20px; box-shadow: var(--shadow-soft); margin-bottom: 25px; position: relative; height: 280px; border: 1px solid #E5E5EA;}
         .chart-title { font-size: 15px; font-weight: 700; margin-bottom: 15px; color: var(--ios-text); border-bottom: 1px solid #F2F2F7; padding-bottom: 10px; display: flex; align-items: center; gap: 8px;}
         .chart-title i { color: var(--ios-text-muted); }
+
+        /* ====== NEW DASHBOARD SUB-CARDS (Detailed Breakdown) ====== */
+        .sub-dash-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(135px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .sub-card { background: #FFFFFF; border-radius: 16px; padding: 15px; display: flex; align-items: center; gap: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); border: 1px solid #E5E5EA; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .sub-card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.06); }
+        .sub-icon { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+        
+        /* ====== NEW VISUAL PROGRESS BAR ====== */
+        .visual-progress-wrap { background: #FFFFFF; padding: 20px; border-radius: 20px; box-shadow: var(--shadow-soft); margin-bottom: 25px; border: 1px solid #E5E5EA; }
+        .vp-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
+        .vp-title { font-size: 15px; font-weight: 700; color: var(--ios-text); display: flex; align-items: center; gap: 8px; }
+        .vp-stats { display: flex; gap: 15px; font-size: 13px; font-weight: 600; }
+        .vp-bar-bg { width: 100%; height: 14px; background: #F2F2F7; border-radius: 20px; overflow: hidden; display: flex; }
+        .vp-bar-fill { height: 100%; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
     </style>
 </head>
 <body>
@@ -405,7 +408,7 @@
                 </p>
             </div>
 
-            <!-- TAB 0: DASHBOARD (CLEAN PASTEL UPGRADE) -->
+            <!-- TAB 0: DASHBOARD (CLEAN PASTEL UPGRADE + NEW FEATURES) -->
             <div id="tab-dashboard" class="tab-panel active">
                 
                 <div class="dash-filter-wrapper">
@@ -413,10 +416,10 @@
                         <button class="dash-filter-btn" id="db-btn-today" onclick="renderDashboard('today')">Today</button>
                         <button class="dash-filter-btn active" id="db-btn-month" onclick="renderDashboard('month')">This Month</button>
                         <button class="dash-filter-btn" id="db-btn-year" onclick="renderDashboard('year')">This Year</button>
-                        <!-- ALL TIME BUTTON REMOVED AS REQUESTED -->
                     </div>
                 </div>
 
+                <!-- MAIN 4 CARDS -->
                 <div class="dash-cards-grid">
                     <div class="dash-card card-sale">
                         <i class="fas fa-wallet icon-bg"></i>
@@ -437,6 +440,58 @@
                         <i class="fas fa-hand-holding-usd icon-bg"></i>
                         <h4><i class="fas fa-hand-holding-usd" style="color:var(--ios-orange);"></i> Global Dues <i class="fas fa-arrow-circle-right" style="font-size: 11px; margin-left: auto;"></i></h4>
                         <div class="val" id="db-val-dues">₹0</div>
+                    </div>
+                </div>
+
+                <!-- NEW: 4 DETAILED BREAKDOWN SUB-CARDS -->
+                <h4 style="font-size: 13px; font-weight: 700; margin: 0 0 12px 5px; color: var(--ios-text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Detailed Breakdown</h4>
+                <div class="sub-dash-grid">
+                    <div class="sub-card">
+                        <div class="sub-icon" style="background: rgba(255, 59, 48, 0.1); color: var(--ios-red);"><i class="fas fa-shopping-basket"></i></div>
+                        <div>
+                            <div style="font-size: 11px; color: var(--ios-text-muted); font-weight: 600;">Market Kharcha</div>
+                            <div style="font-size: 16px; font-weight: 800; color: var(--ios-text);" id="db-val-market">₹0</div>
+                        </div>
+                    </div>
+                    <div class="sub-card">
+                        <div class="sub-icon" style="background: rgba(255, 149, 0, 0.1); color: var(--ios-orange);"><i class="fas fa-user-tie"></i></div>
+                        <div>
+                            <div style="font-size: 11px; color: var(--ios-text-muted); font-weight: 600;">Staff Payment</div>
+                            <div style="font-size: 16px; font-weight: 800; color: var(--ios-text);" id="db-val-staff">₹0</div>
+                        </div>
+                    </div>
+                    <div class="sub-card">
+                        <div class="sub-icon" style="background: rgba(90, 200, 250, 0.1); color: #5AC8FA;"><i class="fas fa-box-open"></i></div>
+                        <div>
+                            <div style="font-size: 11px; color: var(--ios-text-muted); font-weight: 600;">General Exp.</div>
+                            <div style="font-size: 16px; font-weight: 800; color: var(--ios-text);" id="db-val-general">₹0</div>
+                        </div>
+                    </div>
+                    <div class="sub-card">
+                        <div class="sub-icon" style="background: rgba(0, 122, 255, 0.1); color: var(--ios-blue);"><i class="fas fa-tint"></i></div>
+                        <div>
+                            <div style="font-size: 11px; color: var(--ios-text-muted); font-weight: 600;">Water & Thanda</div>
+                            <div style="font-size: 16px; font-weight: 800; color: var(--ios-text);" id="db-val-water">₹0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NEW: COLLECTION MODE VISUAL PROGRESS BAR -->
+                <div class="visual-progress-wrap">
+                    <div class="vp-header">
+                        <div class="vp-title"><i class="fas fa-money-check-alt" style="color: var(--ios-orange);"></i> Payment Collection Mode</div>
+                        <div class="vp-stats">
+                            <span style="color: var(--ios-green);"><i class="fas fa-money-bill-wave"></i> Cash: <span id="db-val-cash-col">₹0</span></span>
+                            <span style="color: var(--ios-blue);"><i class="fas fa-mobile-alt"></i> Online: <span id="db-val-online-col">₹0</span></span>
+                        </div>
+                    </div>
+                    <div class="vp-bar-bg">
+                        <div id="db-bar-cash" class="vp-bar-fill" style="background: var(--ios-green); width: 50%;"></div>
+                        <div id="db-bar-online" class="vp-bar-fill" style="background: var(--ios-blue); width: 50%;"></div>
+                    </div>
+                    <div style="display:flex; justify-content: space-between; margin-top: 8px; font-size: 12px; color: var(--ios-text-muted); font-weight: 600;">
+                        <span id="db-pct-cash">50% Cash</span>
+                        <span id="db-pct-online">50% Online</span>
                     </div>
                 </div>
 
@@ -1114,7 +1169,7 @@
         }
 
         // ==========================================
-        // 4. PREMIUM PASTEL DASHBOARD LOGIC (Chart.js)
+        // 4. PREMIUM PASTEL DASHBOARD LOGIC (Chart.js + New Sub Cards)
         // ==========================================
         let trendChartInstance = null;
         let expenseChartInstance = null;
@@ -1145,6 +1200,7 @@
 
             let sumSale = 0, sumProfit = 0, sumExpense = 0;
             let expMarket = 0, expStaff = 0, expGen = 0, expTip = 0;
+            let sumWater = 0, sumCashCol = 0, sumOnlineCol = 0;
             
             let chartLabels = [];
             let chartSales = [];
@@ -1165,18 +1221,42 @@
                 expGen += t.tGeneral;
                 expTip += t.tTip;
 
+                // For New Cards and Visulizations
+                sumWater += t.waterGrandTotal;
+                sumCashCol += t.totalCashReceived;
+                sumOnlineCol += t.totalOnlineReceived;
+
                 let dParts = d.split('-');
                 chartLabels.push(`${dParts[2]}/${dParts[1]}`);
                 chartSales.push(t.totalSale);
                 chartProfit.push(t.sone);
             });
 
-            // Update Summary Cards
+            // Update MAIN Summary Cards
             document.getElementById('db-val-sale').innerText = '₹' + sumSale.toLocaleString('en-IN');
             document.getElementById('db-val-expense').innerText = '₹' + sumExpense.toLocaleString('en-IN');
             document.getElementById('db-val-profit').innerText = '₹' + sumProfit.toLocaleString('en-IN');
             let globalDuesInfo = getGlobalDuesList();
             document.getElementById('db-val-dues').innerText = '₹' + globalDuesInfo.globalTotalPending.toLocaleString('en-IN');
+
+            // Update NEW DETAILED SUB-CARDS
+            document.getElementById('db-val-market').innerText = '₹' + expMarket.toLocaleString('en-IN');
+            document.getElementById('db-val-staff').innerText = '₹' + expStaff.toLocaleString('en-IN');
+            document.getElementById('db-val-general').innerText = '₹' + expGen.toLocaleString('en-IN');
+            document.getElementById('db-val-water').innerText = '₹' + sumWater.toLocaleString('en-IN');
+
+            // Update NEW COLLECTION PROGRESS BAR
+            document.getElementById('db-val-cash-col').innerText = '₹' + sumCashCol.toLocaleString('en-IN');
+            document.getElementById('db-val-online-col').innerText = '₹' + sumOnlineCol.toLocaleString('en-IN');
+            
+            let totalCol = sumCashCol + sumOnlineCol;
+            let cashPct = totalCol > 0 ? Math.round((sumCashCol / totalCol) * 100) : 0;
+            let onlinePct = totalCol > 0 ? Math.round((sumOnlineCol / totalCol) * 100) : 0;
+
+            document.getElementById('db-bar-cash').style.width = cashPct + '%';
+            document.getElementById('db-bar-online').style.width = onlinePct + '%';
+            document.getElementById('db-pct-cash').innerText = cashPct + '% Cash';
+            document.getElementById('db-pct-online').innerText = onlinePct + '% Online';
 
             // DRAW TREND CHART (Curved Line with Gradient)
             let ctxTrend = document.getElementById('trendChart').getContext('2d');
